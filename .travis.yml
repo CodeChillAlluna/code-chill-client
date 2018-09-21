@@ -1,0 +1,24 @@
+- language: node_js
+  node_js:
+    - "10"
+
+  before_script:
+    - curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | sudo apt-key add -
+    - echo "deb https://dl.yarnpkg.com/debian/ stable main" | sudo tee /etc/apt/sources.list.d/yarn.list
+    - sudo apt-get update
+    - sudo apt-get install yarn -y
+    - sudo yarn global add coveralls
+    - sudo yarn global add create-react-app
+    - sudo yarn global add serve
+    - sudo yarn global add typescript
+    - sudo yarn global add react-scripts-ts
+    - cd src/client
+    - yarn install
+
+  script:
+    - yarn build
+  after_success: 
+    - yarn test --coverage && cat ./coverage/lcov.info | coveralls
+
+notifications:
+  email: false
