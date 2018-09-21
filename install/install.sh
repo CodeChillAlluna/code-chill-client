@@ -44,14 +44,8 @@ sudo apt-get install yarn -y
 # Install nginx
 sudo apt-get install nginx
 
-# Install js packages
-cd $vagrant
-yarn global add create-react-app
-yarn global add serve
-yarn global add typescript
-yarn global add react-scripts-ts
-
 # Install client dependencies
+cd $vagrant
 yarn install --no-bin-links
 
 print_help
