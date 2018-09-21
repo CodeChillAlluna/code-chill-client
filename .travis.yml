@@ -3,12 +3,6 @@ node_js:
   - "10"
 
 before_script:
-  - sudo yarn global add coveralls
-  - sudo yarn global add create-react-app
-  - sudo yarn global add serve
-  - sudo yarn global add typescript
-  - sudo yarn global add react-scripts-ts
-  - cd src/client
   - yarn install
 
 script:
