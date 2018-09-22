@@ -5,6 +5,6 @@ Master project : Online development environment
 
 Code&Chill is a web application written in Java and React. It gives users the possibility to use their development environment in a browser. No more worries about setup so just code, and chill.
 
-If you want to know more about this project check our website : https://codechillalluna.github.io/code-chill/
+If you want to know more about this project check our [website](https://codechillalluna.github.io/code-chill/).
 
-This repository contains the client part of the project, if you want to check the server part click [here](ttps://github.com/CodeChillAlluna/code-chill-server).
+This repository contains the client part of the project, if you want to check the server part click [here](https://github.com/CodeChillAlluna/code-chill-server).
