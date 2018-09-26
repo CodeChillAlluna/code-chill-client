@@ -1,7 +1,6 @@
 #!/bin/bash
 
 vagrant=/vagrant
-src=$vagrant/src
 HOME_DIR=/home$vagrant
 
 print_help () {
