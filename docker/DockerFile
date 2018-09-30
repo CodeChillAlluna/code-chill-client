@@ -1,0 +1,16 @@
+FROM alpine
+
+RUN apk update && apk upgrade && \
+    apk add nginx && \
+    rm -rf /var/cache/apk/* && \
+    mkdir -p /run/nginx
+
+RUN mkdir /www
+
+COPY nginx/nginx.conf /etc/nginx/nginx.conf
+COPY nginx/default.conf /etc/nginx/conf.d/default.conf
+COPY build /www
+
+EXPOSE 80 443
+
+CMD ["nginx", "-g", "daemon off;"]
