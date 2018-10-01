@@ -6,6 +6,8 @@ import CodeChillXterm from "./CodeChillXterm";
 import UserConnection from "./user/UserConnection";
 import UserSignUp from "./user/UserSignUp";
 import UserProfile from "./user/UserProfile";
+import DashMenu from "./dashboard/DashMenu";
+import DashDocker from "./dashboard/DashDocker";
 import NotFound from "./NotFound";
 import UserForgotPassword from "./user/UserForgotPassword";
 import UserResetPassword from "./user/UserResetPassword";
@@ -54,6 +56,16 @@ export default class CodeChillRouter extends React.Component<any, any> {
                             exact={true}
                             path={R.TERMINAL}
                             component={CodeChillXterm}
+                        />
+                        <Route
+                            exact={true}
+                            path={R.DASHBOARD}
+                            component={DashMenu}
+                        />
+                        <Route
+                            exact={true}
+                            path={R.DASHDOCKER}
+                            component={DashDocker}
                         />
                         <Route
                             path={R.NOTFOUND}
