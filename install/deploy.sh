@@ -1,9 +1,7 @@
 #!/bin/bash
 
-vagrant=/vagrant
-docker_build=$vagrant/docker/build
-docker_path=$vagrant/docker
-cd $vagrant
+docker_path=docker
+docker_build=$docker_path/build
 
 build_app () {
     # Build the app
@@ -13,24 +11,26 @@ build_app () {
 build_dockerfile() {
     # Build dockerfile
     cd $docker_path
-    cp -r $vagrant/build $docker_build
+    cp -r ../build build
+    rm build/config.js
+    ls build
     docker build -f DockerFile -t codechill/client .
+    cd ..
     rm -r $docker_build
 }
 
 deploy() {
-    cd $docker_path
     echo "TODO"
 }
 
-if [ "$1" -eq "0" ]
+if [ "$1" -eq 0 ]
 then
   build_app
   build_dockerfile
-elif [ "$1" -eq "1" ]
+elif [ "$1" -eq 1 ]
 then
   build_dockerfile
-elif [ "$1" -eq "2" ]
+elif [ "$1" -eq 2 ]
 then
   build_dockerfile
   deploy
