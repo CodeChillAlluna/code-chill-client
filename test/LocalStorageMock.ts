@@ -2,43 +2,43 @@
  * Inspired by jest-localstorage-mock by Bryan Clark
  */
 export class LocalStorageMock {
-  constructor(jest) {
-    Object.defineProperty(this, 'getItem', {
+  constructor(jest: any) {
+    Object.defineProperty(this, "getItem", {
       enumerable: false,
-      value: jest.fn(key => this[key] || null)
+      value: jest.fn((key) => this[key] || null)
     });
 
-    Object.defineProperty(this, 'setItem', {
+    Object.defineProperty(this, "setItem", {
       enumerable: false,
-      value: jest.fn((key, val = '') => {
-        this[key] = val + '';
+      value: jest.fn((key, val = "") => {
+        this[key] = val + "";
       }),
     });
 
-    Object.defineProperty(this, 'removeItem', {
+    Object.defineProperty(this, "removeItem", {
       enumerable: false,
-      value: jest.fn(key => {
+      value: jest.fn((key) => {
         delete this[key];
       }),
     });
 
-    Object.defineProperty(this, 'clear', {
+    Object.defineProperty(this, "clear", {
       enumerable: false,
       value: jest.fn(() => {
-        Object.keys(this).map(key => delete this[key]);
+        Object.keys(this).map((key) => delete this[key]);
       }),
     });
 
-    Object.defineProperty(this, 'toString', {
+    Object.defineProperty(this, "toString", {
       enumerable: false,
       value: jest.fn(() => {
-        return '[object Storage]';
+        return "[object Storage]";
       }),
     });
 
-    Object.defineProperty(this, 'key', {
+    Object.defineProperty(this, "key", {
       enumerable: false,
-      value: jest.fn(idx => Object.keys(this)[idx] || null),
+      value: jest.fn((idx) => Object.keys(this)[idx] || null),
     });
   }
 
