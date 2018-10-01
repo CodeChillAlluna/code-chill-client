@@ -23,7 +23,7 @@
   "scripts": {
     "start": "react-scripts-ts start",
     "build": "react-scripts-ts build",
-    "test": "react-scripts-ts test --env=jsdom",
+    "test": "jest",
     "eject": "react-scripts-ts eject"
   },
   "devDependencies": {
@@ -35,8 +35,13 @@
     "coveralls": "^3.0.2",
     "create-react-app": "^1.5.2",
     "enzyme": "^3.6.0",
+    "jest": "^23.6.0",
     "react-addons-test-utils": "^15.6.2",
     "react-scripts-ts": "^2.17.0",
-    "serve": "^10.0.1"
+    "serve": "^10.0.1",
+    "ts-jest": "^23.10.3"
+  },
+  "jest": {
+    "preset": "ts-jest"
   }
 }
