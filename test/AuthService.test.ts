@@ -44,8 +44,6 @@ test("testing getToken toto", () => {
   var auth = new AuthService();
   (global as any).localStorage  = new LocalStorageMock(jest);
 
-  expect(auth.getToken()).toBeNull();
-
   auth.setToken("toto");
   expect(auth.getToken()).toEqual("toto");
 
