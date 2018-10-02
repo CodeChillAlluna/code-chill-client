@@ -60,3 +60,22 @@ test("testing getProfile", () => {
   auth.setToken(token);
   expect(auth.getProfile()).toEqual(jwtDecode(token));
 });
+
+test("testing isTokenExpired", () => {
+  var auth = new AuthService();
+  (global as any).localStorage  = new LocalStorageMock(jest);
+
+  expect(auth.isTokenExpired(expiredToken)).toBe(true);
+  expect(auth.isTokenExpired(tokenAvailable)).toBe(false);
+  expect(auth.isTokenExpired("toto")).toBe(true);
+  
+});
+
+test("testing logout", () => {
+  var auth = new AuthService();
+  (global as any).localStorage  = new LocalStorageMock(jest);
+
+  auth.setToken(tokenAvailable);
+  auth.logout();
+  expect(auth.getToken()).toBeNull();
+});

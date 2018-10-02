@@ -1,4 +1,4 @@
-import decode from "jwt-decode";
+import * as decode from "jwt-decode";
 const config = require("../package.json");
 
 export default class AuthService {
@@ -45,7 +45,7 @@ export default class AuthService {
                 return false;
             }
         } catch (err) {
-            return false;
+            return true;
         }
     }
 
