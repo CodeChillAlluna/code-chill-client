@@ -1,4 +1,4 @@
-import decode from "jwt-decode";
+import * as decode from "jwt-decode";
 
 export default class AuthService {
     // Initializing important variables
@@ -44,7 +44,7 @@ export default class AuthService {
                 return false;
             }
         } catch (err) {
-            return false;
+            return true;
         }
     }
 
