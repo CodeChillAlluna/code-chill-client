@@ -5,7 +5,6 @@ import * as fit from "xterm/lib/addons/fit/fit";
 import * as ClassName from "classnames";
 import AuthService from "../AuthService";
 import withAuth from "./withAuth";
-const config = require("../../package.json");
 
 export interface IxTermProps extends React.DOMAttributes<{}> {
     onChange?: (e: any) => void;
@@ -48,7 +47,7 @@ class CodeChillXterm extends React.Component<IxTermProps, IxTermState> {
         this.xterm = new Terminal();
         Terminal.applyAddon(attach);
         Terminal.applyAddon(fit);
-        this.webSocket = new WebSocket(`${config.dockerApi}/containers/${this.props.user.dockers[0].name}/
+        this.webSocket = new WebSocket(`${(window as any).env.dockerApi}/containers/${this.props.user.dockers[0].name}/
 attach/ws?logs=0&stream=1&stdin=1&stdout=1&stderr=1`);
         this.Auth.startDocker(this.props.user.dockers[0].name).then((res) => {
             console.log(res);
