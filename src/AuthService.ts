@@ -8,7 +8,6 @@ export default class AuthService {
 
     constructor(domain?: string) {
         this.domain = domain || (window as any).env.restApi; // API server domain
-        console.log((window as any).env.restApi);
         this.user = Object;
         this.fetch = this.fetch.bind(this); // React binding stuff
         this.login = this.login.bind(this);
