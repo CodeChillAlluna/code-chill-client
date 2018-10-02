@@ -1,5 +1,4 @@
 import decode from "jwt-decode";
-const config = require("../package.json");
 
 export default class AuthService {
     // Initializing important variables
@@ -8,7 +7,7 @@ export default class AuthService {
     domain: string;
 
     constructor(domain?: string) {
-        this.domain = domain || config.restApi; // API server domain
+        this.domain = domain || (window as any).env.restApi; // API server domain
         this.user = Object;
         this.fetch = this.fetch.bind(this); // React binding stuff
         this.login = this.login.bind(this);
