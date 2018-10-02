@@ -14,6 +14,11 @@ const tokenAvailable: String = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.e"
 + "yJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2M"
 + "jM5MDIyLCJleHAiOjFlKzMxfQ.yU5y9eCA5Z1VXrwbrRHoiqpMa5oii_5vApdg-dDDgIE";
 
+(<any> window).env = {
+  restApi: "http://localhost:8080",
+  dockerApi: "ws://localhost:2375"
+};
+
 test("testing loggedIn", () => {
   var auth = new AuthService();
   (global as any).localStorage  = new LocalStorageMock(jest);
