@@ -1,5 +1,5 @@
 import AuthService from "../src/AuthService";
-import "jest-localstorage-mock"
+import "jest-localstorage-mock";
 import * as jwtDecode from "jwt-decode";
 
 const token: String = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWI"
