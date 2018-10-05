@@ -5,4 +5,6 @@ export const RESET_PASSWORD = "/reset/:token";
 export const LOGIN = "/login";
 export const SIGNUP = "/signup";
 export const TERMINAL = "/term";
+export const DASHBOARD = "/dashboard";
+export const DASHDOCKER = "/dashboard/:iddocker";
 export const NOTFOUND = "*";
