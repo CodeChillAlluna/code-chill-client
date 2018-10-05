@@ -1,5 +1,5 @@
 import AuthService from "../src/AuthService";
-import { LocalStorageMock } from "./LocalStorageMock";
+import "jest-localstorage-mock";
 import * as jwtDecode from "jwt-decode";
 
 const token: String = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWI"
@@ -21,8 +21,6 @@ const tokenAvailable: String = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.e"
 
 test("testing loggedIn", () => {
   var auth = new AuthService();
-  (global as any).localStorage  = new LocalStorageMock(jest);
-
   expect(auth.loggedIn()).toBe(false);
 
   auth.setToken(tokenAvailable);
@@ -34,8 +32,6 @@ test("testing loggedIn", () => {
 
 test("testing _checkStatus", () => {
   var auth = new AuthService();
-  (global as any).localStorage  = new LocalStorageMock(jest);
-
   let responseSuccess: any = { status: 200 };
   expect(auth._checkStatus(responseSuccess)).toBe(responseSuccess);
 
@@ -47,8 +43,6 @@ test("testing _checkStatus", () => {
 
 test("testing getToken toto", () => {
   var auth = new AuthService();
-  (global as any).localStorage  = new LocalStorageMock(jest);
-
   auth.setToken("toto");
   expect(auth.getToken()).toEqual("toto");
 
@@ -58,16 +52,12 @@ test("testing getToken toto", () => {
 
 test("testing getProfile", () => {
   var auth = new AuthService();
-  (global as any).localStorage  = new LocalStorageMock(jest);
-
   auth.setToken(token);
   expect(auth.getProfile()).toEqual(jwtDecode(token));
 });
 
 test("testing isTokenExpired", () => {
   var auth = new AuthService();
-  (global as any).localStorage  = new LocalStorageMock(jest);
-
   expect(auth.isTokenExpired(expiredToken)).toBe(true);
   expect(auth.isTokenExpired(tokenAvailable)).toBe(false);
   expect(auth.isTokenExpired("toto")).toBe(true);
@@ -76,8 +66,6 @@ test("testing isTokenExpired", () => {
 
 test("testing logout", () => {
   var auth = new AuthService();
-  (global as any).localStorage  = new LocalStorageMock(jest);
-
   auth.setToken(tokenAvailable);
   auth.logout();
   expect(auth.getToken()).toBeNull();
