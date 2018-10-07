@@ -31,12 +31,13 @@ class DashDocker extends React.Component<any, any> {
     }
 
     componentDidMount() {
-        this.changeCpuPercent = this.changeCpuPercent.bind(this);
-        setInterval(this.changeCpuPercent, 5000);
+        this.changeResourcesUsed = this.changeResourcesUsed.bind(this);
+        setInterval(this.changeResourcesUsed, 5000);
     }
 
-    changeCpuPercent() {
+    changeResourcesUsed() {
         this.setState({ dockerCpuPercent: this.docker.getCpuPercent() });
+        this.setState({ dockerRamUsed: this.docker.getRamUsed() });
     }
 
     render() {
@@ -85,6 +86,10 @@ class DashDocker extends React.Component<any, any> {
                                 <List.Item>
                                     <List.Header>CpuPercent</List.Header>
                                     {this.state.dockerCpuPercent}
+                                </List.Item>
+                                <List.Item>
+                                    <List.Header>RamUsed</List.Header>
+                                    {this.state.dockerRamUsed}
                                 </List.Item>
                             </List>
                         </Grid.Column>

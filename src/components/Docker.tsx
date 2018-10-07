@@ -42,7 +42,7 @@ export default class Docker implements Idocker {
         this.state = this.getState();
         this.status = this.getStatus();
         this.cpuPercent = 0;
-        this.ramUsed = this.getRamUsed();
+        this.ramUsed = 0;
     }
 
     getId() {
@@ -77,12 +77,11 @@ export default class Docker implements Idocker {
 
     getCpuPercent() {
         this.cpuPercent += 1;
-        console.log(this.cpuPercent);
         return this.cpuPercent;
     }
 
     getRamUsed() {
-        let ramUsed: number = 0;
-        return ramUsed;
+        this.ramUsed += 1;
+        return this.ramUsed;
     }
 }
