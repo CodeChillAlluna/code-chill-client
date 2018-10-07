@@ -3,10 +3,13 @@ import { Grid, List, Header, Container, Icon } from "semantic-ui-react";
 import AuthService from "../../AuthService";
 import withAuth from "../withAuth";
 import NavBar from "../NavBar";
+import Docker from "../Docker";
 
 class DashDocker extends React.Component<any, any> {
     Auth: AuthService;
     userUpdate: Object;
+    docker: Docker;
+
     constructor(props: any) {
         super(props);
         this.state = {
@@ -16,6 +19,7 @@ class DashDocker extends React.Component<any, any> {
             "message": ""
         };
         this.Auth = new AuthService();
+        this.docker = new Docker();
     }
 
     render() {
@@ -24,14 +28,14 @@ class DashDocker extends React.Component<any, any> {
                 <Grid>
                     <Grid.Row columns={3}>
                         <Grid.Column>
-                            <Header as="h1">Docker 8dfafdbc3a40</Header>
+                            <Header as="h1">{this.docker.id}</Header>
                             <Container textAlign="left">
-                                Patate, Potato
+                                {this.docker.name}
                             </Container>
                         </Grid.Column>
                         <Grid.Column>
                             <Container textAlign="center">
-                                ubuntu:latest
+                                {this.docker.os}
                             </Container>
                         </Grid.Column>
                         <Grid.Column>
@@ -47,23 +51,23 @@ class DashDocker extends React.Component<any, any> {
                             <List>
                                 <List.Item>
                                     <List.Header>Id</List.Header>
-                                    8dfafdbc3a40
+                                    {this.docker.id}
                                 </List.Item>
                                 <List.Item>
                                     <List.Header>Creation date</List.Header>
-                                    1367854155
+                                    {this.docker.creationDate}
                                 </List.Item>
                                 <List.Item>
                                     <List.Header>State</List.Header>
-                                    exited
+                                    {this.docker.state}
                                 </List.Item>
                                 <List.Item>
                                     <List.Header>Status</List.Header>
-                                    Exit 0
+                                    {this.docker.status}
                                 </List.Item>
                                 <List.Item>
                                     <List.Header>CpuPercent</List.Header>
-                                    80
+                                    {this.docker.cpuPercent}
                                 </List.Item>
                             </List>
                         </Grid.Column>
