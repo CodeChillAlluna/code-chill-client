@@ -12,14 +12,31 @@ class DashDocker extends React.Component<any, any> {
 
     constructor(props: any) {
         super(props);
+        this.docker = new Docker();
         this.state = {
             "firstname": this.props.user.firstname,
             "lastname": this.props.user.lastname,
             "email": this.props.user.email,
-            "message": ""
+            "message": "",
+            "dockerId": this.docker.id,
+            "dockerName": this.docker.name,
+            "dockerOs": this.docker.os,
+            "dockerCreationDate": this.docker.creationDate,
+            "dockerState": this.docker.state,
+            "dockerStatus": this.docker.status,
+            "dockerCpuPercent": this.docker.cpuPercent,
+            "dockerRamUsed": this.docker.ramUsed
         };
         this.Auth = new AuthService();
-        this.docker = new Docker();
+    }
+
+    componentDidMount() {
+        this.changeCpuPercent = this.changeCpuPercent.bind(this);
+        setInterval(this.changeCpuPercent, 5000);
+    }
+
+    changeCpuPercent() {
+        this.setState({ dockerCpuPercent: this.docker.getCpuPercent() });
     }
 
     render() {
@@ -67,7 +84,7 @@ class DashDocker extends React.Component<any, any> {
                                 </List.Item>
                                 <List.Item>
                                     <List.Header>CpuPercent</List.Header>
-                                    {this.docker.cpuPercent}
+                                    {this.state.dockerCpuPercent}
                                 </List.Item>
                             </List>
                         </Grid.Column>

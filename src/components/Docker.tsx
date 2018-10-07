@@ -5,8 +5,8 @@ interface Idocker {
     creationDate?: String;
     state?: String;
     status?: String;
-    cpuPercent?: Number;
-    ramUsed?: Number;
+    cpuPercent?: number;
+    ramUsed?: number;
 
     getId?: () => String;
     getName?: () => String;
@@ -14,8 +14,8 @@ interface Idocker {
     getCreationDate?: () => String;
     getStatus?: () => String;
     getState?: () => String;
-    getCpuPercent?: () => Number;
-    getRamUsed?: () => Number;
+    getCpuPercent?: () => number;
+    getRamUsed?: () => number;
     setName?: (name: String) => void;
     turnOn?: () => Boolean;
     turnOff?: () => Boolean;
@@ -31,8 +31,8 @@ export default class Docker implements Idocker {
     creationDate: String;
     state: String;
     status: String;
-    cpuPercent: Number;
-    ramUsed: Number;
+    cpuPercent: number;
+    ramUsed: number;
 
     constructor() {
         this.id = this.getId();
@@ -41,7 +41,7 @@ export default class Docker implements Idocker {
         this.creationDate = this.getCreationDate();
         this.state = this.getState();
         this.status = this.getStatus();
-        this.cpuPercent = this.getCpuPercent();
+        this.cpuPercent = 0;
         this.ramUsed = this.getRamUsed();
     }
 
@@ -76,12 +76,13 @@ export default class Docker implements Idocker {
     }
 
     getCpuPercent() {
-        let cpuPercent: Number = 0;
-        return cpuPercent;
+        this.cpuPercent += 1;
+        console.log(this.cpuPercent);
+        return this.cpuPercent;
     }
 
     getRamUsed() {
-        let ramUsed: Number = 0;
+        let ramUsed: number = 0;
         return ramUsed;
     }
 }
