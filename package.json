@@ -4,9 +4,11 @@
   "private": true,
   "homepage": "/",
   "dependencies": {
+    "@nivo/stream": "^0.49.0",
     "@types/lodash": "^4.14.116",
     "@types/react-redux": "^6.0.9",
     "jwt-decode": "^2.2.0",
+    "package": "^1.0.1",
     "react": "^16.5.2",
     "react-dom": "^16.5.2",
     "react-redux": "^5.0.7",
@@ -42,6 +44,8 @@
   },
   "jest": {
     "preset": "ts-jest",
-    "setupFiles": ["jest-localstorage-mock"]
+    "setupFiles": [
+      "jest-localstorage-mock"
+    ]
   }
 }
