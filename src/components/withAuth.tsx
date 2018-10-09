@@ -36,7 +36,12 @@ export default function withAuth(AuthComponent: any) {
             if (this.state.token) {
                 return (
                     <NavBar history={this.props.history} token={this.state.token} user={this.state.user}>
-                        <AuthComponent history={this.props.history} token={this.state.token} user={this.state.user} />
+                        <AuthComponent
+                            history={this.props.history}
+                            token={this.state.token}
+                            user={this.state.user}
+                            props={this.props}
+                        />
                     </NavBar>
                 );
             } else {

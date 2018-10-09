@@ -4,6 +4,7 @@ import AuthService from "../../AuthService";
 import withAuth from "../withAuth";
 import NavBar from "../NavBar";
 import Docker from "../Docker";
+import DashGraph from "./DashGraph";
 
 class DashDocker extends React.Component<any, any> {
     Auth: AuthService;
@@ -25,7 +26,9 @@ class DashDocker extends React.Component<any, any> {
             "dockerState": this.docker.state,
             "dockerStatus": this.docker.status,
             "dockerCpuPercent": this.docker.cpuPercent,
-            "dockerRamUsed": this.docker.ramUsed
+            "dockerRamUsed": this.docker.ramUsed,
+            "dockerCpuArray": [{ "CPU": 0 }],
+            "dockerRamArray": [{ "RAM": 0 }]
         };
         this.Auth = new AuthService();
     }
@@ -38,6 +41,16 @@ class DashDocker extends React.Component<any, any> {
     changeResourcesUsed() {
         this.setState({ dockerCpuPercent: this.docker.getCpuPercent() });
         this.setState({ dockerRamUsed: this.docker.getRamUsed() });
+
+        this.state.dockerCpuArray.push({ "CPU": this.docker.getCpuPercent()});
+        this.state.dockerRamArray.push({ "RAM": this.docker.getRamUsed()});
+
+        if (this.state.dockerCpuArray.length > 10) {
+            this.state.dockerCpuArray.shift();
+        }
+        if (this.state.dockerRamArray.length > 10) {
+            this.state.dockerRamArray.shift();
+        }
     }
 
     render() {
@@ -92,6 +105,22 @@ class DashDocker extends React.Component<any, any> {
                                     {this.state.dockerRamUsed}
                                 </List.Item>
                             </List>
+                        </Grid.Column>
+                    </Grid.Row>
+                    <Grid.Row columns={2}>
+                        <Grid.Column>
+                            <DashGraph
+                                datavalues={this.state.dockerCpuArray}
+                                dataname={[ "CPU" ]}
+                                graphcolor="accent"
+                            />
+                        </Grid.Column>
+                        <Grid.Column>
+                            <DashGraph
+                                datavalues={this.state.dockerRamArray}
+                                dataname={[ "RAM" ]}
+                                graphcolor="paired"
+                            />
                         </Grid.Column>
                     </Grid.Row>
                 </Grid>
