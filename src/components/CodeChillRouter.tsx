@@ -3,6 +3,7 @@ import * as R from "../Routes";
 import { Route, Switch, BrowserRouter } from "react-router-dom";
 import App from "../App";
 import CodeChillXterm from "./CodeChillXterm";
+import CodeChillIDE from "./CodeChillIDE";
 import UserConnection from "./user/UserConnection";
 import UserSignUp from "./user/UserSignUp";
 import UserProfile from "./user/UserProfile";
@@ -56,6 +57,11 @@ export default class CodeChillRouter extends React.Component<any, any> {
                             exact={true}
                             path={R.TERMINAL}
                             component={CodeChillXterm}
+                        />
+                        <Route
+                            exact={true}
+                            path={R.IDE}
+                            component={CodeChillIDE}
                         />
                         <Route
                             exact={true}
