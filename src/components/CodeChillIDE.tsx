@@ -25,7 +25,6 @@ class CodeChillIDE extends React.Component<any, any> {
 
     render() {
         let height = window.innerHeight - 61;
-        console.log(`${(window as any).env.docker}:${this.props.user.dockers[0].port}`);
         return (
             <iframe
                 src={`${(window as any).env.docker}:${this.props.user.dockers[0].port}`}
