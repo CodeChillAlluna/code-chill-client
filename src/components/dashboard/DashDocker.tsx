@@ -1,10 +1,11 @@
 import * as React from "react";
-import { Grid, List, Header, Container, Icon } from "semantic-ui-react";
+import { Grid, List, Header, Container, Icon, Button } from "semantic-ui-react";
 import AuthService from "../../AuthService";
 import withAuth from "../withAuth";
 import NavBar from "../NavBar";
 import Docker from "../Docker";
 import DashGraph from "./DashGraph";
+import ModalCC from "../Modal";
 
 class DashDocker extends React.Component<any, any> {
     Auth: AuthService;
@@ -31,10 +32,11 @@ class DashDocker extends React.Component<any, any> {
             "dockerRamArray": [{ "RAM": 0 }]
         };
         this.Auth = new AuthService();
+        this.changeResourcesUsed = this.changeResourcesUsed.bind(this);
+        this.newDockerSubmit = this.newDockerSubmit.bind(this);
     }
 
     componentDidMount() {
-        this.changeResourcesUsed = this.changeResourcesUsed.bind(this);
         setInterval(this.changeResourcesUsed, 5000);
     }
 
@@ -53,9 +55,19 @@ class DashDocker extends React.Component<any, any> {
         }
     }
 
+    newDockerSubmit() {
+        this.Auth.createDocker().then((res) => {
+            console.log(res);
+        });
+    }
+
     render() {
         return (
             <NavBar history={this.props.history} user={this.props.user}>
+                <h1>Mes environnements</h1>
+                <ModalCC title="HELLO WORLD" trigger={<Button>Show Modal</Button>}>
+                    <Button onClick={this.newDockerSubmit}>Créer un nouveau Docker</Button>
+                </ModalCC>
                 <Grid>
                     <Grid.Row columns={3}>
                         <Grid.Column>

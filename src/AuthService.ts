@@ -128,6 +128,14 @@ export default class AuthService {
         });
     }
 
+    createDocker() {
+        return this.fetch(`${this.domain}/containers/create`, {
+            method: "POST",
+        }).then((res) => {
+            return Promise.resolve(res);
+        });
+    }
+
     startDocker(id: string) {
         return this.fetch(`${this.domain}/containers/${id}/start`, {
             method: "POST",
