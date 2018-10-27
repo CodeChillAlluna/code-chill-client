@@ -1,7 +1,7 @@
 import * as React from "react";
 import AuthService from "../../AuthService";
+import { Grid, Header, Container, Icon, Tab, Divider } from "semantic-ui-react";
 import withAuth from "../withAuth";
-import NavBar from "../NavBar";
 import DashDocker from "./DashDocker";
 
 class DashMenu extends React.Component<any, any> {
@@ -16,13 +16,47 @@ class DashMenu extends React.Component<any, any> {
             "message": ""
         };
         this.Auth = new AuthService();
+        this.addDocker = this.addDocker.bind(this);
+    }
+
+    addDocker() {
+        this.Auth.createDocker().then((res) => {
+            console.log(res);
+        });
     }
 
     render() {
+        const panes = [
+            { 
+                menuItem: `${this.props.user.dockers[0].id}`, 
+                render: () => <Tab.Pane attached={false}><DashDocker docker={this.props.user.dockers[0]}/></Tab.Pane> 
+            }
+        ];
+
         return (
-            <NavBar history={this.props.history} user={this.props.user}>
-                <DashDocker />
-            </NavBar>
+            <div>
+                <Grid>
+                <Grid.Row columns={2}>
+                    <Grid.Column>
+                        <Header as="h1">Dashboard</Header>
+                    </Grid.Column>
+                    <Grid.Column>
+                        <Container textAlign="right">
+                            <h2>
+                                <small>Ajouter un nouveau docker </small>
+                                <Icon 
+                                    color="green" 
+                                    name="plus square outline" 
+                                    onClick={this.addDocker} 
+                                />
+                            </h2>
+                        </Container>
+                    </Grid.Column>
+                </Grid.Row>
+                </Grid>
+                <Divider />
+                <Tab menu={{ pointing: true }} panes={panes} />
+            </div>
         );
     }
 

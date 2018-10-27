@@ -7,5 +7,4 @@ export const SIGNUP = "/signup";
 export const TERMINAL = "/term";
 export const IDE = "/ide";
 export const DASHBOARD = "/dashboard";
-export const DASHDOCKER = "/dashboard/:iddocker";
 export const NOTFOUND = "*";
