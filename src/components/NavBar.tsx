@@ -12,7 +12,7 @@ import {
   } from "semantic-ui-react";
 import { Link } from "react-router-dom";
 import { formatRoute } from "react-router-named-routes";
-import { TERMINAL, DASHBOARD, HOME, LOGIN, PROFILE } from "../Routes";
+import { IDE, DASHBOARD, HOME, LOGIN, PROFILE } from "../Routes";
 const logo = require("../resources/logocodeandchill.png");
 
 const NavBarChildren = ({ children }) => (
@@ -51,7 +51,7 @@ export default class NavBar extends React.Component<any, any> {
                 </Dropdown>
             );
             leftItems = [
-                { as: Link, content: "Terminal", key: "terminal", to: formatRoute(TERMINAL) },
+                { as: Link, content: "IDE", key: "ide", to: formatRoute(IDE) },
                 { as: Link, content: "Dashboard", key: "dashboard", to: formatRoute(DASHBOARD) }
             ];
         } else {
