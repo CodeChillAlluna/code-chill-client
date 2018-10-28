@@ -140,12 +140,29 @@ export default class AuthService {
         return this.fetch(`${this.domain}/containers/${id}/start`, {
             method: "POST",
         }).then((res) => {
+            console.log(res);
             return Promise.resolve(res);
         });
     }
 
     stopDocker(id: number) {
         return this.fetch(`${this.domain}/containers/${id}/stop`, {
+            method: "POST",
+        }).then((res) => {
+            return Promise.resolve(res);
+        });
+    }
+
+    pauseDocker(id: number) {
+        return this.fetch(`${this.domain}/containers/${id}/pause`, {
+            method: "POST",
+        }).then((res) => {
+            return Promise.resolve(res);
+        });
+    }
+
+    resumeDocker(id: number) {
+        return this.fetch(`${this.domain}/containers/${id}/resume`, {
             method: "POST",
         }).then((res) => {
             return Promise.resolve(res);
@@ -170,7 +187,14 @@ export default class AuthService {
             ...options
         })
             .then(this._checkStatus)
-            .then((response) => response.json());
+            .then((response) => {
+
+                if (response.status === 204 || response.status === 304) {
+                    return { status: response.status };
+                }
+
+                return response.json();
+            });
     }
 
     _checkStatus(response: any) {

@@ -21,6 +21,10 @@ class DashDocker extends React.Component<any, any> {
             "dockerRamArray": [{ "RAM": 0 }]
         };
         this.changeResourcesUsed = this.changeResourcesUsed.bind(this);
+        this.startDocker = this.startDocker.bind(this);
+        this.stopDocker = this.stopDocker.bind(this);
+        this.pauseDocker = this.pauseDocker.bind(this);
+        this.resumeDocker = this.resumeDocker.bind(this);
         console.log(this.props.docker);
     }
 
@@ -43,6 +47,30 @@ class DashDocker extends React.Component<any, any> {
         }
     }
 
+    startDocker() {
+        this.props.Auth.startDocker(this.props.docker.id).then((res) => {
+            console.log(res);
+        });
+    }
+
+    stopDocker() {
+        this.props.Auth.stopDocker(this.props.docker.id).then((res) => {
+            console.log(res);
+        });
+    }
+
+    pauseDocker() {
+        this.props.Auth.pauseDocker(this.props.docker.id).then((res) => {
+            console.log(res);
+        });
+    }
+
+    resumeDocker() {
+        this.props.Auth.resumeDocker(this.props.docker.id).then((res) => {
+            console.log(res);
+        });
+    }
+
     render() {
         return (
             <Grid>
@@ -52,9 +80,30 @@ class DashDocker extends React.Component<any, any> {
                     </Grid.Column>
                     <Grid.Column>
                         <Container textAlign="right">
-                            <Icon color="green" name="play" style={{ cursor: "pointer" }} />
-                            <Icon color="teal" name="pause" style={{ cursor: "pointer" }} />
-                            <Icon color="red" name="power off" style={{ cursor: "pointer" }} />
+                            <Icon 
+                                color="green" 
+                                name="play" 
+                                style={{ cursor: "pointer" }} 
+                                onClick={this.startDocker} 
+                            />
+                            <Icon 
+                                color="teal" 
+                                name="pause" 
+                                style={{ cursor: "pointer" }} 
+                                onClick={this.pauseDocker}
+                            />
+                            <Icon 
+                                color="teal" 
+                                name="forward" 
+                                style={{ cursor: "pointer" }} 
+                                onClick={this.resumeDocker}
+                            />
+                            <Icon 
+                                color="red" 
+                                name="power off" 
+                                style={{ cursor: "pointer" }} 
+                                onClick={this.stopDocker} 
+                            />
                         </Container>
                     </Grid.Column>
                 </Grid.Row>

@@ -29,7 +29,13 @@ class DashMenu extends React.Component<any, any> {
         const panes = [
             { 
                 menuItem: `${this.props.user.dockers[0].id}`, 
-                render: () => <Tab.Pane attached={false}><DashDocker docker={this.props.user.dockers[0]}/></Tab.Pane> 
+                render: () => {
+                    return (
+                        <Tab.Pane attached={false}>
+                            <DashDocker docker={this.props.user.dockers[0]} Auth={this.Auth}/>
+                        </Tab.Pane>
+                    );
+                }
             }
         ];
 
