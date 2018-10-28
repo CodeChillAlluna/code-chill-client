@@ -52,9 +52,9 @@ class DashDocker extends React.Component<any, any> {
                     </Grid.Column>
                     <Grid.Column>
                         <Container textAlign="right">
-                            <Icon color="green" name="play" />
-                            <Icon color="teal" name="pause"/>
-                            <Icon color="red" name="power off"/>
+                            <Icon color="green" name="play" style={{ cursor: "pointer" }} />
+                            <Icon color="teal" name="pause" style={{ cursor: "pointer" }} />
+                            <Icon color="red" name="power off" style={{ cursor: "pointer" }} />
                         </Container>
                     </Grid.Column>
                 </Grid.Row>

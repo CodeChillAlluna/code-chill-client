@@ -48,6 +48,7 @@ class DashMenu extends React.Component<any, any> {
                                     color="green" 
                                     name="plus square outline" 
                                     onClick={this.addDocker} 
+                                    style={{ cursor: "pointer" }}
                                 />
                             </h2>
                         </Container>
