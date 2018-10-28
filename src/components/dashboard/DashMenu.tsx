@@ -49,7 +49,7 @@ class DashMenu extends React.Component<any, any> {
                     <Grid.Column>
                         <Container textAlign="right">
                             <h2>
-                                <small>Ajouter un nouveau docker </small>
+                                <small>Add new docker </small>
                                 <Icon 
                                     color="green" 
                                     name="plus square outline" 

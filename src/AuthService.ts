@@ -140,7 +140,6 @@ export default class AuthService {
         return this.fetch(`${this.domain}/containers/${id}/start`, {
             method: "POST",
         }).then((res) => {
-            console.log(res);
             return Promise.resolve(res);
         });
     }
@@ -164,6 +163,14 @@ export default class AuthService {
     resumeDocker(id: number) {
         return this.fetch(`${this.domain}/containers/${id}/resume`, {
             method: "POST",
+        }).then((res) => {
+            return Promise.resolve(res);
+        });
+    }
+
+    statsDocker(id: number) {
+        return this.fetch(`${this.domain}/containers/${id}/stats`, {
+            method: "GET",
         }).then((res) => {
             return Promise.resolve(res);
         });
