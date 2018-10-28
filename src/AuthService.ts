@@ -136,7 +136,7 @@ export default class AuthService {
         });
     }
 
-    startDocker(id: string) {
+    startDocker(id: number) {
         return this.fetch(`${this.domain}/containers/${id}/start`, {
             method: "POST",
         }).then((res) => {
@@ -144,7 +144,7 @@ export default class AuthService {
         });
     }
 
-    stopDocker(id: string) {
+    stopDocker(id: number) {
         return this.fetch(`${this.domain}/containers/${id}/stop`, {
             method: "POST",
         }).then((res) => {

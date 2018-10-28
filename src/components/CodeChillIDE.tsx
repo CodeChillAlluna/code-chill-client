@@ -12,11 +12,11 @@ class CodeChillIDE extends React.Component<any, any> {
     }
 
     componentDidMount() {
-        this.Auth.startDocker(this.props.user.dockers[0].name).then((res) => { ""; });
+        this.Auth.startDocker(this.props.user.dockers[0].id).then((res) => { ""; });
     }
 
     componentWillUnmount() {
-        this.Auth.stopDocker(this.props.user.dockers[0].name).then((res) => { ""; });
+        this.Auth.stopDocker(this.props.user.dockers[0].id).then((res) => { ""; });
     }
 
     render() {
