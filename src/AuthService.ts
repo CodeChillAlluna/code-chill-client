@@ -136,6 +136,14 @@ export default class AuthService {
         });
     }
 
+    deleteDocker(id: number) {
+        return this.fetch(`${this.domain}/containers/${id}`, {
+            method: "DELETE",
+        }).then((res) => {
+            return Promise.resolve(res);
+        });
+    }
+
     startDocker(id: number) {
         return this.fetch(`${this.domain}/containers/${id}/start`, {
             method: "POST",
@@ -205,6 +213,7 @@ export default class AuthService {
     }
 
     _checkStatus(response: any) {
+        console.log("response", response);
         // raises an error in case response status is not a success
         if (response.status >= 200 && response.status < 400) { // Success status lies between 200 to 300
             return response;
