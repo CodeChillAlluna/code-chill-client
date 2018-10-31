@@ -13,31 +13,49 @@ class DashMenu extends React.Component<any, any> {
             "firstname": this.props.user.firstname,
             "lastname": this.props.user.lastname,
             "email": this.props.user.email,
-            "message": ""
+            "message": "",
+            "dockers": this.props.user.dockers,
+            "activeIndex": 0
         };
         this.Auth = new AuthService();
         this.addDocker = this.addDocker.bind(this);
+        this.dockerDeleted = this.dockerDeleted.bind(this);
     }
 
     addDocker() {
         this.Auth.createDocker().then((res) => {
-            console.log(res);
+            console.log("docker created !");
+            let updatedDockers = this.state.dockers;
+            updatedDockers.push(res);
+            this.setState({ dockers: updatedDockers });
+        });
+    }
+
+    dockerDeleted() {
+        this.Auth.getUserInfos().then((infos) => {
+            this.setState({ dockers: infos.dockers });
         });
     }
 
     render() {
-        const panes = [
-            { 
-                menuItem: `${this.props.user.dockers[0].id}`, 
+        let panes = [];
+        for (let docker of this.state.dockers) {
+            panes.push({ 
+                menuItem: `${docker.id}`, 
                 render: () => {
                     return (
-                        <Tab.Pane attached={false}>
-                            <DashDocker docker={this.props.user.dockers[0]} Auth={this.Auth}/>
+                        <Tab.Pane>
+                            <DashDocker
+                                key={docker.id}
+                                docker={docker} 
+                                Auth={this.Auth} 
+                                onDockerDelete={this.dockerDeleted} 
+                            />
                         </Tab.Pane>
                     );
                 }
-            }
-        ];
+            });
+        }
 
         return (
             <div>
@@ -62,7 +80,10 @@ class DashMenu extends React.Component<any, any> {
                 </Grid.Row>
                 </Grid>
                 <Divider />
-                <Tab menu={{ pointing: true }} panes={panes} />
+                <Tab 
+                    menu={{ pointing: true }} 
+                    panes={panes}
+                />
             </div>
         );
     }

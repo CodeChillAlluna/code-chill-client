@@ -4,6 +4,7 @@ import DashGraph from "./DashGraph";
 
 class DashDocker extends React.Component<any, any> {
     userUpdate: Object;
+    interval: any;
 
     constructor(props: any) {
         super(props);
@@ -32,7 +33,11 @@ class DashDocker extends React.Component<any, any> {
     }
 
     componentDidMount() {
-        setInterval(this.statsDocker, 5000);
+        this.interval = setInterval(this.statsDocker, 5000);
+    }
+    
+    componentWillUnmount() {
+        clearInterval(this.interval);
     }
 
     startDocker() {
@@ -60,36 +65,34 @@ class DashDocker extends React.Component<any, any> {
     }
 
     deleteDocker() {
+        clearInterval(this.interval);
         this.props.Auth.deleteDocker(this.props.docker.id).then((res) => {
             console.log("docker deleted !");
-            this.setState({ dockerExists: false });
+            this.props.onDockerDelete();
         });
     }
 
     statsDocker() {
-        console.log(this.state.dockerExists);
-        if (this.state.dockerExists) {
-            this.props.Auth.statsDocker(this.props.docker.id).then((docker) => {
-                let memoryPercentage = (docker.memoryUsage as number) / (docker.memoryLimit as number) * 100;
-    
-                this.setState({ dockerIdContainer: docker.dockerId });
-                this.setState({ dockerName: docker.name });
-                this.setState({ dockerMemoryLimit: docker.memoryLimit });
-                this.setState({ dockerMemoryUsage: docker.memoryUsage });
-                this.setState({ dockerMemoryPercentage: memoryPercentage });
-                this.setState({ dockerImage: docker.image });
-                this.setState({ dockerStatus: docker.status });
-                this.setState({ dockerCreationDate: docker.created.split("T")[0] });
-    
-                this.state.dockerMemoryArray.push({ "RAM": this.state.dockerMemoryUsage });
-                if (this.state.dockerMemoryArray.length > 10) {
-                    this.state.dockerMemoryArray.shift();
-                }
-                //  TODO: dockerCpuPercent
+        this.props.Auth.statsDocker(this.props.docker.id).then((docker) => {
+            let memoryPercentage = (docker.memoryUsage as number) / (docker.memoryLimit as number) * 100;
 
-                this.setState({ dockerExists: true });
-            });
-        } 
+            this.setState({ dockerIdContainer: docker.dockerId });
+            this.setState({ dockerName: docker.name });
+            this.setState({ dockerMemoryLimit: docker.memoryLimit });
+            this.setState({ dockerMemoryUsage: docker.memoryUsage });
+            this.setState({ dockerMemoryPercentage: memoryPercentage });
+            this.setState({ dockerImage: docker.image });
+            this.setState({ dockerStatus: docker.status });
+            this.setState({ dockerCreationDate: docker.created.split("T")[0] });
+
+            this.state.dockerMemoryArray.push({ "RAM": this.state.dockerMemoryUsage });
+            if (this.state.dockerMemoryArray.length > 10) {
+                this.state.dockerMemoryArray.shift();
+            }
+            //  TODO: dockerCpuPercent
+
+            this.setState({ dockerExists: true });
+        });
     }
 
     render() {
