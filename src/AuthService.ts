@@ -128,7 +128,23 @@ export default class AuthService {
         });
     }
 
-    startDocker(id: string) {
+    createDocker() {
+        return this.fetch(`${this.domain}/containers/create`, {
+            method: "POST",
+        }).then((res) => {
+            return Promise.resolve(res);
+        });
+    }
+
+    deleteDocker(id: number) {
+        return this.fetch(`${this.domain}/containers/${id}`, {
+            method: "DELETE",
+        }).then((res) => {
+            return Promise.resolve(res);
+        });
+    }
+
+    startDocker(id: number) {
         return this.fetch(`${this.domain}/containers/${id}/start`, {
             method: "POST",
         }).then((res) => {
@@ -136,9 +152,33 @@ export default class AuthService {
         });
     }
 
-    stopDocker(id: string) {
+    stopDocker(id: number) {
         return this.fetch(`${this.domain}/containers/${id}/stop`, {
             method: "POST",
+        }).then((res) => {
+            return Promise.resolve(res);
+        });
+    }
+
+    pauseDocker(id: number) {
+        return this.fetch(`${this.domain}/containers/${id}/pause`, {
+            method: "POST",
+        }).then((res) => {
+            return Promise.resolve(res);
+        });
+    }
+
+    resumeDocker(id: number) {
+        return this.fetch(`${this.domain}/containers/${id}/resume`, {
+            method: "POST",
+        }).then((res) => {
+            return Promise.resolve(res);
+        });
+    }
+
+    statsDocker(id: number) {
+        return this.fetch(`${this.domain}/containers/${id}/stats`, {
+            method: "GET",
         }).then((res) => {
             return Promise.resolve(res);
         });
@@ -161,18 +201,13 @@ export default class AuthService {
             headers,
             ...options
         })
-            .then(this._checkStatus)
-            .then((response) => response.json());
-    }
+            .then((response) => {
 
-    _checkStatus(response: any) {
-        // raises an error in case response status is not a success
-        if (response.status >= 200 && response.status < 400) { // Success status lies between 200 to 300
-            return response;
-        } else {
-            let error = new Error(response.statusText);
-            // error.response = response
-            throw error;
-        }
+                if (response.status === 204 || response.status === 304) {
+                    return { status: response.status };
+                }
+
+                return response.json();
+            });
     }
 }
