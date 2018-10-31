@@ -18,8 +18,8 @@ class DashDocker extends React.Component<any, any> {
             "dockerMemoryLimit": 0,
             "dockerMemoryUsage": 0,
             "dockerMemoryPercentage": 0,
-            "dockerCpuArray": [{ "CPU": 0 }],
-            "dockerMemoryArray": [{ "RAM": 0 }]
+            "dockerCpuArray": [{ "CPU": 0, "max": 100 }],
+            "dockerMemoryArray": [{ "RAM": 0, "max": 100 }]
         };
         this.startDocker = this.startDocker.bind(this);
         this.stopDocker = this.stopDocker.bind(this);
@@ -81,7 +81,8 @@ class DashDocker extends React.Component<any, any> {
                 this.setState({ dockerStatus: docker.status });
                 this.setState({ dockerCreationDate: docker.created.split("T")[0] });
     
-                this.state.dockerMemoryArray.push({ "RAM": this.state.dockerMemoryUsage });
+                this.state.dockerMemoryArray.push({ "RAM": this.state.dockerMemoryUsage,
+                                                    "max": this.state.dockerMemoryLimit });
                 if (this.state.dockerMemoryArray.length > 10) {
                     this.state.dockerMemoryArray.shift();
                 }
@@ -173,14 +174,16 @@ class DashDocker extends React.Component<any, any> {
                                                 <Grid.Column>
                                                     <DashGraph
                                                         datavalues={this.state.dockerCpuArray}
-                                                        dataname={[ "CPU" ]}
+                                                        datamax={100}
+                                                        dataname={[ "CPU", "max" ]}
                                                         graphcolor="accent"
                                                     />
                                                 </Grid.Column>
                                                 <Grid.Column>
                                                     <DashGraph
                                                         datavalues={this.state.dockerMemoryArray}
-                                                        dataname={[ "RAM" ]}
+                                                        datamax={this.state.dockerMemoryLimit}
+                                                        dataname={[ "RAM", "max" ]}
                                                         graphcolor="paired"
                                                     />
                                                 </Grid.Column>

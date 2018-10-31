@@ -31,33 +31,58 @@ class DashGraph extends React.Component<any, any> {
                     }}
                     axisRight={{
                         "orient": "right",
-                        "tickSize": 0,
+                        "tickSize": 5,
                         "tickPadding": 3,
                         "tickRotation": 0,
-                        "legend": "%used",
-                        "legendOffset": 39,
-                        "min": 0,
-                        "max": 100
+                        "legend": "used",
+                        "legendOffset": 60,
+                        "tickValues" : [
+                            0,
+                            (this.props.props.datamax / 4).toFixed(2),
+                            (this.props.props.datamax / 2).toFixed(2),
+                            (this.props.props.datamax * 3 / 4).toFixed(2),
+                            (this.props.props.datamax).toFixed(2)
+                        ]
                     }}
                     enableGridX={false}
                     enableGridY={true}
                     offsetType="none"
                     colors={this.props.props.graphcolor}
-                    fillOpacity={0.85}
+                    fillOpacity={0.75}
                     borderColor="#000"
                     animate={true}
                     motionStiffness={90}
                     motionDamping={15}
+                    defs={[
+                        {
+                            "id": "max",
+                            "type": "patternDots",
+                            "background": "#ffffff",
+                            "color": "#ffffff",
+                            "size": 20,
+                            "padding": 0,
+                            "stagger": true
+                        }
+                    ]}
+                    fill={[
+                        {
+                            "match": {
+                                "id": "max"
+                            },
+                            "id": "max"
+                        }
+                    ]}
                     legends={[
                         {
-                            "anchor": "bottom-right",
+                            "anchor": "bottom-left",
                             "direction": "column",
-                            "translateX": 100,
+                            "translateX": 5,
+                            "translateY": -85,
                             "itemWidth": 80,
                             "itemHeight": 20,
                             "itemTextColor": "#999",
-                            "symbolSize": 12,
-                            "symbolShape": "circle",
+                            "symbolSize": 9,
+                            "symbolShape": "square",
                             "effects": [
                                 {
                                     "on": "hover",
