@@ -1,6 +1,5 @@
 import * as React from "react";
 import AuthService from "../../AuthService";
-import withAuth from "../withAuth";
 import { ResponsiveStream } from "@nivo/stream";
 
 class DashGraph extends React.Component<any, any> {
@@ -8,21 +7,14 @@ class DashGraph extends React.Component<any, any> {
     userUpdate: Object;
     constructor(props: any) {
         super(props);
-        this.state = {
-            "firstname": this.props.user.firstname,
-            "lastname": this.props.user.lastname,
-            "email": this.props.user.email,
-            "message": "",
-        };
-        this.Auth = new AuthService();
     }
 
     render() {
         return (
             <div style={{ height: 120, width: "auto" }}>
                 <ResponsiveStream
-                    data={this.props.props.datavalues}
-                    keys={this.props.props.dataname}
+                    data={this.props.datavalues}
+                    keys={this.props.dataname}
                     margin={{
                         "top": 10,
                         "right": 70,
@@ -35,19 +27,12 @@ class DashGraph extends React.Component<any, any> {
                         "tickPadding": 3,
                         "tickRotation": 0,
                         "legend": "used",
-                        "legendOffset": 60,
-                        "tickValues" : [
-                            0,
-                            (this.props.props.datamax / 4).toFixed(2),
-                            (this.props.props.datamax / 2).toFixed(2),
-                            (this.props.props.datamax * 3 / 4).toFixed(2),
-                            (this.props.props.datamax).toFixed(2)
-                        ]
+                        "legendOffset": 60
                     }}
                     enableGridX={false}
                     enableGridY={true}
                     offsetType="none"
-                    colors={this.props.props.graphcolor}
+                    colors={this.props.graphcolor}
                     fillOpacity={0.75}
                     borderColor="#000"
                     animate={true}
@@ -99,4 +84,4 @@ class DashGraph extends React.Component<any, any> {
     }
 
 }
-export default withAuth(DashGraph);
+export default DashGraph;
