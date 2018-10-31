@@ -14,7 +14,7 @@ class DashDocker extends React.Component<any, any> {
             "dockerImage": "",
             "dockerCreationDate": "",
             "dockerStatus": "",
-            "dockerCpuPercent": "",
+            "dockerCpuPercent": 0,
             "dockerMemoryLimit": 0,
             "dockerMemoryUsage": 0,
             "dockerMemoryPercentage": 0,
@@ -75,14 +75,24 @@ class DashDocker extends React.Component<any, any> {
         this.props.Auth.statsDocker(this.props.docker.id).then((docker) => {
             let memoryPercentage = (docker.memoryUsage as number) / (docker.memoryLimit as number) * 100;
             let updatedDockerMemoryArray = this.state.dockerMemoryArray;
+            let updatedDockerCpuArray = this.state.dockerCpuArray;
 
             updatedDockerMemoryArray.push({ 
                 "RAM": this.state.dockerMemoryUsage,
                 "max": this.state.dockerMemoryLimit 
             });
 
+            updatedDockerCpuArray.push({
+                "CPU": this.state.dockerCpuPercent,
+                "max": 100 
+            });
+
             if (updatedDockerMemoryArray.length > 10) {
                 updatedDockerMemoryArray.shift();
+            }
+
+            if (updatedDockerCpuArray.length > 10) {
+                updatedDockerCpuArray.shift();
             }
 
             this.setState({ 
@@ -94,7 +104,8 @@ class DashDocker extends React.Component<any, any> {
                 dockerImage: docker.image,
                 dockerStatus: docker.status,
                 dockerCreationDate: docker.created.split("T")[0],
-                dockerMemoryArray: updatedDockerMemoryArray
+                dockerMemoryArray: updatedDockerMemoryArray,
+                dockerCpuPercent: docker.cpuPercent
             });
             //  TODO: dockerCpuPercent
         });
@@ -164,7 +175,7 @@ class DashDocker extends React.Component<any, any> {
                                 </List.Item>
                                 <List.Item>
                                     <List.Header>CpuPercent</List.Header>
-                                    {this.state.dockerCpuPercent}
+                                    {(this.state.dockerCpuPercent).toFixed(2)} %
                                 </List.Item>
                                 <List.Item>
                                     <List.Header>RamUsed</List.Header>
