@@ -30,17 +30,6 @@ test("testing loggedIn", () => {
   expect(auth.loggedIn()).toBe(false);
 });
 
-test("testing _checkStatus", () => {
-  var auth = new AuthService();
-  let responseSuccess: any = { status: 200 };
-  expect(auth._checkStatus(responseSuccess)).toBe(responseSuccess);
-
-  let responseEchec: any = { status: 400, statusText: "failed" };
-  expect(() => {
-    auth._checkStatus(responseEchec);
-  }).toThrow();
-});
-
 test("testing getToken toto", () => {
   var auth = new AuthService();
   auth.setToken("toto");
