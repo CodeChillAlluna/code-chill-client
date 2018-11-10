@@ -23,7 +23,7 @@ export default function withAuth(AuthComponent: any) {
                     Auth.getUserInfos().then((res) => {
                         this.setState({
                             token: profile,
-                            user: res
+                            user: res.content
                         });
                     });
                 } catch (err) {

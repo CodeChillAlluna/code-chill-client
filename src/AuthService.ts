@@ -1,8 +1,10 @@
 import * as decode from "jwt-decode";
+import * as request from "./constants/request.config";
+import Response from "./Response";
+import * as ToastConfig from "./constants/toast.config";
 
 export default class AuthService {
     // Initializing important variables
-
     user: Object;
     domain: string;
 
@@ -23,9 +25,9 @@ export default class AuthService {
                 username,
                 password
             })
-        }).then((res) => {
-            this.setToken(res.token); // Setting the token in localStorage
-            return Promise.resolve(res);
+        }).then((response) => {
+            this.setToken(response.content["token"]); // Setting the token in localStorage
+            return Promise.resolve(response);
         });
     }
 
@@ -72,7 +74,7 @@ export default class AuthService {
         return this.fetch(`${this.domain}/user`, {
             method: "GET",
          }).then((res) => {
-           return Promise.resolve(res);
+            return Promise.resolve(res);
         });
     }
 
@@ -132,6 +134,13 @@ export default class AuthService {
         return this.fetch(`${this.domain}/containers/create`, {
             method: "POST",
         }).then((res) => {
+            if (res.status === 200) {
+                res["content"]["message"] = "Docker created.";
+                res["content"]["toast"] = ToastConfig.SUCCESS;
+            } else {
+                res["content"]["message"] = "Cannot create a new docker.";
+                res["content"]["toast"] = ToastConfig.WARNING;
+            }
             return Promise.resolve(res);
         });
     }
@@ -140,6 +149,13 @@ export default class AuthService {
         return this.fetch(`${this.domain}/containers/${id}`, {
             method: "DELETE",
         }).then((res) => {
+            if (res.status === 204) {
+                res["content"]["message"] = "Docker deleted.";
+                res["content"]["toast"] = ToastConfig.SUCCESS;
+            } else {
+                res["content"]["message"] = "Docker needs to be off to be deleted.";
+                res["content"]["toast"] = ToastConfig.WARNING;
+            }
             return Promise.resolve(res);
         });
     }
@@ -148,6 +164,13 @@ export default class AuthService {
         return this.fetch(`${this.domain}/containers/${id}/start`, {
             method: "POST",
         }).then((res) => {
+            if (res.status === 204) {
+                res["content"]["message"] = "Docker started.";
+                res["content"]["toast"] = ToastConfig.SUCCESS;
+            } else {
+                res["content"]["message"] = "Docker needs to be off to be started.";
+                res["content"]["toast"] = ToastConfig.WARNING;
+            }
             return Promise.resolve(res);
         });
     }
@@ -156,6 +179,13 @@ export default class AuthService {
         return this.fetch(`${this.domain}/containers/${id}/stop`, {
             method: "POST",
         }).then((res) => {
+            if (res.status === 204) {
+                res["content"]["message"] = "Docker stopped.";
+                res["content"]["toast"] = ToastConfig.SUCCESS;
+            } else {
+                res["content"]["message"] = "Docker needs to be running to be stopped.";
+                res["content"]["toast"] = ToastConfig.WARNING;
+            }
             return Promise.resolve(res);
         });
     }
@@ -164,6 +194,13 @@ export default class AuthService {
         return this.fetch(`${this.domain}/containers/${id}/pause`, {
             method: "POST",
         }).then((res) => {
+            if (res.status === 204) {
+                res["content"]["message"] = "Docker paused.";
+                res["content"]["toast"] = ToastConfig.SUCCESS;
+            } else {
+                res["content"]["message"] = "Docker needs to be running to be paused.";
+                res["content"]["toast"] = ToastConfig.WARNING;
+            }
             return Promise.resolve(res);
         });
     }
@@ -172,6 +209,13 @@ export default class AuthService {
         return this.fetch(`${this.domain}/containers/${id}/resume`, {
             method: "POST",
         }).then((res) => {
+            if (res.status === 204) {
+                res["content"]["message"] = "Docker resumed.";
+                res["content"]["toast"] = ToastConfig.SUCCESS;
+            } else {
+                res["content"]["message"] = "Docker needs to be on pause to be resumed.";
+                res["content"]["toast"] = ToastConfig.WARNING;
+            }
             return Promise.resolve(res);
         });
     }
@@ -182,6 +226,25 @@ export default class AuthService {
         }).then((res) => {
             return Promise.resolve(res);
         });
+    }
+
+    parseResponse(res: any) {
+        let response = new Response();
+        response.status = res.status;
+        response.statusText = res.statusText;
+        response["content"]["message"] = "";
+        if (!request.NO_CONTENTS.find((el) => el === res.status)) {
+            let rjson = res.json();
+            return rjson.then((r) => {
+                response["content"] = r;
+                if (!response["content"]["message"]) {
+                    response["content"]["message"] = "REST API doesn't return any message";
+                }
+                return Promise.resolve(response);
+            });
+        } else {
+            return Promise.resolve(response);
+        }
     }
 
     fetch(url: any, options: any) {
@@ -201,13 +264,11 @@ export default class AuthService {
             headers,
             ...options
         })
-            .then((response) => {
-
-                if (response.status === 204 || response.status === 304) {
-                    return { status: response.status };
-                }
-
-                return response.json();
+            .then((res) => {
+                return Promise.resolve(this.parseResponse(res));
+            }).catch((error) => {
+                // TODO : change error handling
+                return Promise.resolve(this.parseResponse(error));
             });
     }
 }

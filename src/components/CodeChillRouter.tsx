@@ -11,6 +11,8 @@ import DashMenu from "./dashboard/DashMenu";
 import NotFound from "./NotFound";
 import UserForgotPassword from "./user/UserForgotPassword";
 import UserResetPassword from "./user/UserResetPassword";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 const config = require("../../package.json");
 
 export default class CodeChillRouter extends React.Component<any, any> {
@@ -73,6 +75,7 @@ export default class CodeChillRouter extends React.Component<any, any> {
                         />
                     </Switch>
                 </BrowserRouter>
+                <ToastContainer/>
             </main>
         );
     }

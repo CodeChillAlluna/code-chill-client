@@ -3,6 +3,7 @@ import AuthService from "../../AuthService";
 import { Grid, Header, Container, Icon, Tab, Divider } from "semantic-ui-react";
 import withAuth from "../withAuth";
 import DashDocker from "./DashDocker";
+import { toast } from "react-toastify";
 
 class DashMenu extends React.Component<any, any> {
     Auth: AuthService;
@@ -24,16 +25,18 @@ class DashMenu extends React.Component<any, any> {
 
     addDocker() {
         this.Auth.createDocker().then((res) => {
-            console.log("docker created !");
+            toast(res.content.message, res.content.toast);
+            delete res.content.message;
             let updatedDockers = this.state.dockers;
-            updatedDockers.push(res);
+            updatedDockers.push(res.content);
             this.setState({ dockers: updatedDockers });
+            
         });
     }
 
     dockerDeleted() {
         this.Auth.getUserInfos().then((infos) => {
-            this.setState({ dockers: infos.dockers });
+            this.setState({ dockers: infos.content.dockers });
         });
     }
 
@@ -46,7 +49,7 @@ class DashMenu extends React.Component<any, any> {
                     return (
                         <Tab.Pane>
                             <DashDocker
-                                key={docker.id}
+                                key={docker.name}
                                 docker={docker} 
                                 Auth={this.Auth} 
                                 onDockerDelete={this.dockerDeleted} 
