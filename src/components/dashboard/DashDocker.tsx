@@ -1,6 +1,7 @@
 import * as React from "react";
-import { Grid, List, Header, Container, Icon } from "semantic-ui-react";
+import { Grid, List, Header, Container, Icon , Modal, Button } from "semantic-ui-react";
 import DashGraph from "./DashGraph";
+import { toast } from "react-toastify";
 
 class DashDocker extends React.Component<any, any> {
     userUpdate: Object;
@@ -19,7 +20,12 @@ class DashDocker extends React.Component<any, any> {
             "dockerMemoryUsage": 0,
             "dockerMemoryPercentage": 0,
             "dockerCpuArray": [{ "CPU": 0, "max": 100 }],
-            "dockerMemoryArray": [{ "RAM": 0, "max": 100 }]
+            "dockerMemoryArray": [{ "RAM": 0, "max": 100 }],
+            "dockerCreated": false,
+            "dockerRunning": false,
+            "dockerPaused": false,
+            "dockerExited": false,
+            "modalDeleteValidation": false
         };
         this.startDocker = this.startDocker.bind(this);
         this.stopDocker = this.stopDocker.bind(this);
@@ -29,10 +35,10 @@ class DashDocker extends React.Component<any, any> {
         this.deleteDocker = this.deleteDocker.bind(this);
 
         this.statsDocker();
-    }
 
-    componentDidMount() {
-        this.interval = setInterval(this.statsDocker, 5000);
+        if (this.state.dockerRunning || this.state.dockerPaused) {
+            this.interval = setInterval(this.statsDocker, 5000);
+        }
     }
     
     componentWillUnmount() {
@@ -40,42 +46,94 @@ class DashDocker extends React.Component<any, any> {
     }
 
     startDocker() {
+        // ok : 204
         this.props.Auth.startDocker(this.props.docker.id).then((res) => {
-            console.log("docker started !");
+            toast(res.content.message, res.content.toast);
+            if (res.status === 204) {
+                this.setState({
+                    dockerCreated: false,
+                    dockerRunning: true,
+                    dockerPaused: false,
+                    dockerExited: false,
+                    dockerStatus: "running"
+                });
+                this.interval = setInterval(this.statsDocker, 5000);
+            } 
         });
     }
 
     stopDocker() {
+        // ok : 204
         this.props.Auth.stopDocker(this.props.docker.id).then((res) => {
-            console.log("docker stopped !");
+            toast(res.content.message, res.content.toast);
+            if (res.status === 204) {
+                this.setState({
+                    dockerCreated: false,
+                    dockerRunning: false,
+                    dockerPaused: false,
+                    dockerExited: true,
+                    dockerStatus: "exited"
+                });
+                clearInterval(this.interval);
+            }
         });
     }
 
     pauseDocker() {
+        // ok : 204
         this.props.Auth.pauseDocker(this.props.docker.id).then((res) => {
-            console.log("docker paused !");
+            toast(res.content.message, res.content.toast);
+            if (res.status === 204) {
+                this.setState({
+                    dockerCreated: false,
+                    dockerRunning: false,
+                    dockerPaused: true,
+                    dockerExited: false,
+                    dockerStatus: "paused"
+                });
+            }
         });
     }
 
     resumeDocker() {
+        // ok : 204
         this.props.Auth.resumeDocker(this.props.docker.id).then((res) => {
-            console.log("docker resumed !");
+            toast(res.content.message, res.content.toast);
+            if (res.status === 204) {
+                this.setState({
+                    dockerCreated: false,
+                    dockerRunning: true,
+                    dockerPaused: false,
+                    dockerExited: false,
+                    dockerStatus: "running"
+                });
+            }
         });
     }
 
     deleteDocker() {
-        clearInterval(this.interval);
+        // ok : 204
         this.props.Auth.deleteDocker(this.props.docker.id).then((res) => {
-            console.log("docker deleted !");
-            this.props.onDockerDelete();
+            if (res.status === 24) {
+                clearInterval(this.interval);
+                this.closeDeleteModal();
+                this.props.onDockerDelete();
+                toast(res.content.message, res.content.toast);
+            }
         });
     }
 
     statsDocker() {
-        this.props.Auth.statsDocker(this.props.docker.id).then((docker) => {
+        this.props.Auth.statsDocker(this.props.docker.id).then((response) => {
+            let docker = response.content;
             let memoryPercentage = (docker.memoryUsage as number) / (docker.memoryLimit as number) * 100;
             let updatedDockerMemoryArray = this.state.dockerMemoryArray;
             let updatedDockerCpuArray = this.state.dockerCpuArray;
+
+            let dockerCreated = false;
+            let dockerRunning = false;
+            let dockerPaused = false;
+            let dockerExited = false;
 
             updatedDockerMemoryArray.push({ 
                 "RAM": this.state.dockerMemoryUsage,
@@ -95,6 +153,23 @@ class DashDocker extends React.Component<any, any> {
                 updatedDockerCpuArray.shift();
             }
 
+            switch (docker.status) {
+                case "created":
+                    dockerCreated = true;
+                    break;
+                case "running":
+                    dockerRunning = true;
+                    break;
+                case "paused":
+                    dockerPaused = true;
+                    break;
+                case "exited":
+                    dockerExited = true;
+                    break;
+                default:
+                    break;
+            }
+
             this.setState({ 
                 dockerIdContainer: docker.dockerId, 
                 dockerName: docker.name,
@@ -105,11 +180,20 @@ class DashDocker extends React.Component<any, any> {
                 dockerStatus: docker.status,
                 dockerCreationDate: docker.created.split("T")[0],
                 dockerMemoryArray: updatedDockerMemoryArray,
-                dockerCpuPercent: docker.cpuPercent
+                dockerCpuPercent: docker.cpuPercent,
+                dockerCreated: dockerCreated,
+                dockerRunning: dockerRunning,
+                dockerPaused: dockerPaused,
+                dockerExited: dockerExited
             });
-            //  TODO: dockerCpuPercent
         });
+        if (this.state.dockerCreated || this.state.dockerExited) {
+            clearInterval(this.interval);
+        }
     }
+
+    showDeleteModal = () => this.setState({ modalDeleteValidation: true });
+    closeDeleteModal = () => this.setState({ modalDeleteValidation: false });
 
     render() {
         return (
@@ -121,36 +205,73 @@ class DashDocker extends React.Component<any, any> {
                         </Grid.Column>
                         <Grid.Column>
                             <Container textAlign="right">
-                                <Icon 
-                                    color="green" 
-                                    name="play" 
-                                    style={{ cursor: "pointer" }} 
-                                    onClick={this.startDocker} 
-                                />
-                                <Icon 
-                                    color="teal" 
-                                    name="pause" 
-                                    style={{ cursor: "pointer" }} 
-                                    onClick={this.pauseDocker}
-                                />
-                                <Icon 
-                                    color="teal" 
-                                    name="forward" 
-                                    style={{ cursor: "pointer" }} 
-                                    onClick={this.resumeDocker}
-                                />
-                                <Icon 
-                                    color="red" 
-                                    name="power off" 
-                                    style={{ cursor: "pointer" }} 
-                                    onClick={this.stopDocker}
-                                />
+                                { 
+                                    (this.state.dockerCreated || this.state.dockerExited)
+                                    ? <Icon 
+                                        color="green" 
+                                        name="play" 
+                                        style={{ cursor: "pointer" }} 
+                                        onClick={this.startDocker} 
+                                    />
+                                    : null
+                                }
+                                { 
+                                    this.state.dockerRunning
+                                    ? <Icon 
+                                        color="teal" 
+                                        name="pause" 
+                                        style={{ cursor: "pointer" }} 
+                                        onClick={this.pauseDocker}
+                                    />
+                                    : null
+                                }
+                                { 
+                                    this.state.dockerPaused
+                                    ? <Icon 
+                                        color="teal" 
+                                        name="forward" 
+                                        style={{ cursor: "pointer" }} 
+                                        onClick={this.resumeDocker}
+                                    />
+                                    : null
+                                }
+                                { 
+                                    (this.state.dockerRunning || this.state.dockerPaused)
+                                    ?  <Icon 
+                                        color="red" 
+                                        name="power off" 
+                                        style={{ cursor: "pointer" }} 
+                                        onClick={this.stopDocker}
+                                    />
+                                    : null
+                                }
                                 <Icon 
                                     color="red" 
                                     name="trash" 
-                                    style={{ cursor: "pointer" }} 
-                                    onClick={this.deleteDocker}
+                                    style={{ cursor: "pointer" }}
+                                    onClick={this.showDeleteModal}
                                 />
+                                <Modal
+                                    basic={true} 
+                                    size="small"
+                                    open={this.state.modalDeleteValidation}
+                                    onClose={this.closeDeleteModal}
+                                >
+                                <Header icon="trash" content="Delete docker ?" />
+                                <Modal.Content>
+                                    <p>
+                                    Would you like to delete this docker ?
+                                    </p>
+                                </Modal.Content>
+                                <Modal.Actions>
+                                    <Button color="red" inverted={true} onClick={this.closeDeleteModal}>
+                                    <Icon name="remove" /> No
+                                    </Button>
+                                    <Button color="green" inverted={true} onClick={this.deleteDocker}>
+                                    <Icon name="checkmark"/> Yes
+                                    </Button>
+                                </Modal.Actions>
+                                </Modal>
                             </Container>
                         </Grid.Column>
                     </Grid.Row>
