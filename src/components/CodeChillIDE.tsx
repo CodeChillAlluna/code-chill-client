@@ -1,38 +1,73 @@
 import * as React from "react";
 import AuthService from "../AuthService";
 import withAuth from "./withAuth";
+import { toast } from "react-toastify";
+import { Embed } from "semantic-ui-react";
+import { Loader } from "semantic-ui-react";
 
 class CodeChillIDE extends React.Component<any, any> {
     Auth: AuthService;
-    port: number;
+    docker: object;
+    
+    state = {
+        started: false,
+        reloadIframe: true
+    };
+
     constructor(props: any) {
         super(props);
         this.Auth = new AuthService();
-        this.port = this.props.user.dockers[0].port;
+        this.docker = this.props.user.dockers.find(
+            (docker: any) => docker.id === Number(this.props.props.match.params.id)
+        );
     }
 
     componentDidMount() {
-        this.Auth.startDocker(this.props.user.dockers[0].id).then((res) => { ""; });
-    }
-
-    componentWillUnmount() {
-        this.Auth.stopDocker(this.props.user.dockers[0].id).then((res) => { ""; });
+        this.Auth.startDocker(this.docker["id"]).then((res) => {
+            if (res.status === 204) {
+                toast(res.content.message, res.content.toast);
+                return true;
+            } else {
+                this.setState({ started: true, reloadIframe: false });
+                return false;
+            }
+        }).then((res) => {
+            if (res) {
+                setTimeout(
+                    () => { 
+                        this.setState({ started: true, reloadIframe: true });
+                    }, 
+                    1500
+                );
+            }
+        });       
     }
 
     render() {
-        let height = window.innerHeight - 61;
-        return (
-            <iframe
-                src={`${(window as any).env.docker}:${this.props.user.dockers[0].port}`}
-                style={{ 
-                    right: 0,
-                    top: 61,
-                    position: "absolute",
-                    width: "100%",
-                    height: `${height}px`
-                }}
-            />
-        );
+        const src = `${(window as any).env.docker}:${this.docker["port"]}`;
+
+        if (this.state.started) {
+            if (this.state.reloadIframe) {
+                return (
+                    <Embed
+                        color="white"
+                        url={src}
+                        icon="folder outline"
+                    />
+                );
+            } else {
+                return (
+                    <Embed
+                        active={true}
+                        color="white"
+                        url={src}
+                        icon="folder outline"
+                    />
+                );
+            }
+        } else {
+            return <div><Loader active={true} inline={true}>Loading env...</Loader></div>;
+        }
     }
 
 }

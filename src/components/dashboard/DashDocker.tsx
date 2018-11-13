@@ -2,6 +2,9 @@ import * as React from "react";
 import { Grid, List, Header, Container, Icon , Modal, Button } from "semantic-ui-react";
 import DashGraph from "./DashGraph";
 import { toast } from "react-toastify";
+import { Link } from "react-router-dom";
+import { IDE } from "../../Routes";
+import { formatRoute } from "react-router-named-routes";
 
 class DashDocker extends React.Component<any, any> {
     userUpdate: Object;
@@ -201,7 +204,11 @@ class DashDocker extends React.Component<any, any> {
                 <Grid>
                     <Grid.Row columns={2}>
                         <Grid.Column>
-                            <Header as="h3">{this.state.dockerName}</Header>
+                            <Header as="h3">
+                            <Link to={formatRoute(IDE, {id: this.props.docker.id })}>
+                                {this.state.dockerName}
+                            </Link>
+                            </Header>
                         </Grid.Column>
                         <Grid.Column>
                             <Container textAlign="right">
@@ -280,7 +287,7 @@ class DashDocker extends React.Component<any, any> {
                             <List>
                                 <List.Item>
                                     <List.Header>ID</List.Header>
-                                    {this.state.dockerIdContainer}
+                                    {this.props.docker.id}
                                 </List.Item>
                                 <List.Item>
                                     <List.Header>Image</List.Header>

@@ -52,7 +52,8 @@ class DashMenu extends React.Component<any, any> {
                                 key={docker.name}
                                 docker={docker} 
                                 Auth={this.Auth} 
-                                onDockerDelete={this.dockerDeleted} 
+                                onDockerDelete={this.dockerDeleted}
+                                parentProps={this.props}
                             />
                         </Tab.Pane>
                     );
