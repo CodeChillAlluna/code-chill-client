@@ -74,6 +74,10 @@ export default class AuthService {
         return this.fetch(`${this.domain}/user`, {
             method: "GET",
          }).then((res) => {
+            if (res.status === 401) {
+                res["content"]["message"] = "Account does not exist!";
+                res["content"]["toast"] = ToastConfig.ERROR;
+            }
             return Promise.resolve(res);
         });
     }
