@@ -74,7 +74,7 @@ test("testing get user infos", () => {
   fetchMock.mock("http://toto", restServer.getHandler());
   try {
     auth.getUserInfos().then((res) => console.log(res)).catch((err) => console.log(err));
-  } catch(e) {
+  } catch (e) {
     console.log(e);
   }
 });
