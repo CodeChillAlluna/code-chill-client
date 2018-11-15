@@ -23,53 +23,55 @@ class CodeChillIDE extends React.Component<any, any> {
     }
 
     componentDidMount() {
-        this.Auth.startDocker(this.docker["id"]).then((res) => {
-            if (res.status === 204) {
-                toast(res.content.message, res.content.toast);
-                return true;
-            } else {
-                this.setState({ started: true, reloadIframe: false });
-                return false;
-            }
-        }).then((res) => {
-            if (res) {
-                setTimeout(
-                    () => { 
-                        this.setState({ started: true, reloadIframe: true });
-                    }, 
-                    1500
-                );
-            }
-        });       
-    }
+        if (!!this.docker) {
+            this.Auth.startDocker(this.docker["id"]).then((res) => {
+                if (res.status === 204) {
+                    toast(res.content.message, res.content.toast);
+                    return true;
+                } else {
+                    this.setState({ started: true, reloadIframe: false });
+                    return false;
+                }
+            }).then((res) => {
+                if (res) {
+                    setTimeout(
+                        () => { 
+                            this.setState({ started: true, reloadIframe: true });
+                        }, 
+                        1500
+                    );
+                }
+            });
+        } 
+    } 
 
     render() {
-        const src = `${(window as any).env.docker}:${this.docker["port"]}`;
-
-        if (this.state.started) {
-            if (this.state.reloadIframe) {
-                return (
-                    <Embed
-                        color="white"
-                        url={src}
-                        icon="folder outline"
-                    />
-                );
-            } else {
-                return (
-                    <Embed
-                        active={true}
-                        color="white"
-                        url={src}
-                        icon="folder outline"
-                    />
-                );
-            }
+        if (!this.docker) {
+            this.props.props.history.replace("/NotFound");
+            return null;
         } else {
-            return <div><Loader active={true} inline={true}>Loading env...</Loader></div>;
+            if (this.state.started) {
+                const src = `${(window as any).env.docker}:${this.docker["port"]}`;
+                if (this.state.reloadIframe) {
+                    return (
+                        <Embed
+                            url={src}
+                            icon="folder outline"
+                        />
+                    );
+                } else {
+                    return (
+                        <Embed
+                            url={src}
+                            icon="folder outline"
+                        />
+                    );
+                }
+            } else {
+                return <div><Loader active={true} inline={true}>Loading env...</Loader></div>;
+            }
         }
     }
-
 }
 
 export default withAuth(CodeChillIDE);
