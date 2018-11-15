@@ -1,6 +1,8 @@
 import AuthService from "../src/AuthService";
 import "jest-localstorage-mock";
 import * as jwtDecode from "jwt-decode";
+import * as FakeRest from "fakerest";
+import * as fetchMock from "fetch-mock";
 
 const token: String = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWI"
   + "iOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE"
@@ -15,7 +17,7 @@ const tokenAvailable: String = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.e"
 + "jM5MDIyLCJleHAiOjFlKzMxfQ.yU5y9eCA5Z1VXrwbrRHoiqpMa5oii_5vApdg-dDDgIE";
 
 (<any> window).env = {
-  restApi: "http://localhost:8080",
+  restApi: "http://toto",
   dockerApi: "ws://localhost:2375"
 };
 
@@ -58,4 +60,21 @@ test("testing logout", () => {
   auth.setToken(tokenAvailable);
   auth.logout();
   expect(auth.getToken()).toBeNull();
+});
+
+test("testing get user infos", () => {
+  var auth = new AuthService();
+  auth.setToken(tokenAvailable);
+  var restServer = new FakeRest.FetchServer("http://toto");
+  restServer.init({
+    "user": [
+        { id: 0, username: "Bobsponge", firstname: "Bob", lastname: "sponge", email: "bob@sponge.wa" }
+    ]
+  });
+  fetchMock.mock("http://toto", restServer.getHandler());
+  try {
+    auth.getUserInfos().then((res) => console.log(res)).catch((err) => console.log(err));
+  } catch(e) {
+    console.log(e);
+  }
 });

@@ -236,6 +236,7 @@ export default class AuthService {
         if (!request.NO_CONTENTS.find((el) => el === res.status)) {
             let rjson = res.json();
             return rjson.then((r) => {
+                console.log(r);
                 response["content"] = r;
                 if (!response["content"]["message"]) {
                     response["content"]["message"] = "REST API doesn't return any message";
