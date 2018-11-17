@@ -9,6 +9,7 @@ after_success:
 
 before_deploy:
   - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+  - ./install/deploy.sh 2
 deploy:
   provider: script
   script: docker push codechillaluna/code-chill-client
