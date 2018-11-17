@@ -198,6 +198,17 @@ test("testing createDocker", () => {
   }).catch((err) => {
     console.log(err);
   });
+  fetchMock.restore();
+  fetchMock.once("http://toto/containers/create", { status: 304, body: { } }, { method: "POST" });
+  auth.createDocker().then(function(data: any) {
+    let message = "Cannot create a new docker.";
+
+    expect(data.status).toEqual(304);
+    expect(data.statusText).toEqual("Not Modified");
+    expect(data.content.message).toEqual(message);
+  }).catch((err) => {
+    console.log(err);
+  });
 });
 
 test("testing deleteDocker", () => {
@@ -207,6 +218,16 @@ test("testing deleteDocker", () => {
     let message = "Docker deleted.";
     expect(data.status).toEqual(204);
     expect(data.statusText).toEqual("No Content");
+    expect(data.content.message).toEqual(message);
+  }).catch((err) => {
+    console.log(err);
+  });
+  fetchMock.restore();
+  fetchMock.once("http://toto/containers/0", { status: 304, body: { } }, { method: "DELETE" });
+  auth.deleteDocker(0).then(function(data: any) {
+    let message = "Docker needs to be off to be deleted.";
+    expect(data.status).toEqual(304);
+    expect(data.statusText).toEqual("Not Modified");
     expect(data.content.message).toEqual(message);
   }).catch((err) => {
     console.log(err);
@@ -224,6 +245,16 @@ test("testing startDocker", () => {
   }).catch((err) => {
     console.log(err);
   });
+  fetchMock.restore();
+  fetchMock.once("http://toto/containers/0/start", { status: 304, body: { } }, { method: "POST" });
+  auth.startDocker(0).then(function(data: any) {
+    let message = "Docker needs to be off to be started.";
+    expect(data.status).toEqual(304);
+    expect(data.statusText).toEqual("Not Modified");
+    expect(data.content.message).toEqual(message);
+  }).catch((err) => {
+    console.log(err);
+  });
 });
 
 test("testing stopDocker", () => {
@@ -233,6 +264,16 @@ test("testing stopDocker", () => {
     let message = "Docker stopped.";
     expect(data.status).toEqual(204);
     expect(data.statusText).toEqual("No Content");
+    expect(data.content.message).toEqual(message);
+  }).catch((err) => {
+    console.log(err);
+  });
+  fetchMock.restore();
+  fetchMock.once("http://toto/containers/0/stop", { status: 304, body: { } }, { method: "POST" });
+  auth.stopDocker(0).then(function(data: any) {
+    let message = "Docker needs to be running to be stopped.";
+    expect(data.status).toEqual(304);
+    expect(data.statusText).toEqual("Not Modified");
     expect(data.content.message).toEqual(message);
   }).catch((err) => {
     console.log(err);
@@ -250,6 +291,16 @@ test("testing pauseDocker", () => {
   }).catch((err) => {
     console.log(err);
   });
+  fetchMock.restore();
+  fetchMock.once("http://toto/containers/0/pause", { status: 304, body: { } }, { method: "POST" });
+  auth.pauseDocker(0).then(function(data: any) {
+    let message = "Docker needs to be running to be paused.";
+    expect(data.status).toEqual(304);
+    expect(data.statusText).toEqual("Not Modified");
+    expect(data.content.message).toEqual(message);
+  }).catch((err) => {
+    console.log(err);
+  });
 });
 
 test("testing resumeDocker", () => {
@@ -259,6 +310,16 @@ test("testing resumeDocker", () => {
     let message = "Docker resumed.";
     expect(data.status).toEqual(204);
     expect(data.statusText).toEqual("No Content");
+    expect(data.content.message).toEqual(message);
+  }).catch((err) => {
+    console.log(err);
+  });
+  fetchMock.restore();
+  fetchMock.once("http://toto/containers/0/resume", { status: 304, body: { } }, { method: "POST" });
+  auth.resumeDocker(0).then(function(data: any) {
+    let message = "Docker needs to be on pause to be resumed.";
+    expect(data.status).toEqual(304);
+    expect(data.statusText).toEqual("Not Modified");
     expect(data.content.message).toEqual(message);
   }).catch((err) => {
     console.log(err);
