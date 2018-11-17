@@ -1,7 +1,6 @@
 import AuthService from "../src/AuthService";
 import "jest-localstorage-mock";
 import * as jwtDecode from "jwt-decode";
-import * as FakeRest from "fakerest";
 import * as fetchMock from "fetch-mock";
 
 const token: String = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWI"
@@ -17,12 +16,23 @@ const tokenAvailable: String = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.e"
 + "jM5MDIyLCJleHAiOjFlKzMxfQ.yU5y9eCA5Z1VXrwbrRHoiqpMa5oii_5vApdg-dDDgIE";
 
 (<any> window).env = {
-  restApi: "http://toto",
-  dockerApi: "ws://localhost:2375"
+  restApi: "http://toto"
 };
 
+test("testing login", () => {
+  let auth = new AuthService();
+  fetchMock.once("http://toto/auth", { token: tokenAvailable }, { method: "POST" });
+
+  auth.login("Bob", "Sponge").then(function(data: any) {
+    expect(data.status).toEqual(200);
+    expect(data.statusText).toEqual("OK");
+    expect(data.content.token).toEqual(tokenAvailable);
+  });
+});
+
 test("testing loggedIn", () => {
-  var auth = new AuthService();
+  let auth = new AuthService();
+  auth.setToken(null);
   expect(auth.loggedIn()).toBe(false);
 
   auth.setToken(tokenAvailable);
@@ -32,8 +42,16 @@ test("testing loggedIn", () => {
   expect(auth.loggedIn()).toBe(false);
 });
 
-test("testing getToken toto", () => {
-  var auth = new AuthService();
+test("testing isTokenExpired", () => {
+  let auth = new AuthService();
+  expect(auth.isTokenExpired(expiredToken)).toBe(true);
+  expect(auth.isTokenExpired(tokenAvailable)).toBe(false);
+  expect(auth.isTokenExpired("toto")).toBe(true);
+  
+});
+
+test("testing getToken", () => {
+  let auth = new AuthService();
   auth.setToken("toto");
   expect(auth.getToken()).toEqual("toto");
 
@@ -41,40 +59,50 @@ test("testing getToken toto", () => {
   expect(auth.getToken()).toBeNull();
 });
 
-test("testing getProfile", () => {
-  var auth = new AuthService();
-  auth.setToken(token);
-  expect(auth.getProfile()).toEqual(jwtDecode(token));
-});
-
-test("testing isTokenExpired", () => {
-  var auth = new AuthService();
-  expect(auth.isTokenExpired(expiredToken)).toBe(true);
-  expect(auth.isTokenExpired(tokenAvailable)).toBe(false);
-  expect(auth.isTokenExpired("toto")).toBe(true);
-  
-});
-
 test("testing logout", () => {
-  var auth = new AuthService();
+  let auth = new AuthService();
   auth.setToken(tokenAvailable);
   auth.logout();
   expect(auth.getToken()).toBeNull();
 });
 
-test("testing get user infos", () => {
-  var auth = new AuthService();
-  auth.setToken(tokenAvailable);
-  var restServer = new FakeRest.FetchServer("http://toto");
-  restServer.init({
-    "user": [
-        { id: 0, username: "Bobsponge", firstname: "Bob", lastname: "sponge", email: "bob@sponge.wa" }
-    ]
-  });
-  fetchMock.mock("http://toto", restServer.getHandler());
-  try {
-    auth.getUserInfos().then((res) => console.log(res)).catch((err) => console.log(err));
-  } catch (e) {
-    console.log(e);
-  }
+test("testing getProfile", () => {
+  let auth = new AuthService();
+  auth.setToken(token);
+  expect(auth.getProfile()).toEqual(jwtDecode(token));
 });
+
+test("testing getUserInfos", () => {
+  let auth = new AuthService();
+  auth.setToken(tokenAvailable);
+  fetchMock.once("http://toto/user", { hello: "world" }, { method: "GET" });
+  auth.getUserInfos().then(function(data: any) {
+    let content = {
+      hello: "world",
+      message: "REST API doesn't return any message"
+    };
+
+    expect(data.status).toEqual(200);
+    expect(data.statusText).toEqual("OK");
+    expect(data.content).toEqual(content);
+  });
+});
+
+/** TODO:
+ * setToken
+ * editUser
+ * deleteUser
+ * createAccount
+ * forgotPassword
+ * checkTokenPassword
+ * resetPassword
+ * createDocker
+ * deleteDocker
+ * startDocker
+ * stopDocker
+ * pauseDocker
+ * resumeDocker
+ * statsDocker
+ * parseResponse
+ * fetch
+ */
