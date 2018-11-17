@@ -21,12 +21,14 @@ const tokenAvailable: String = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.e"
 
 test("testing login", () => {
   let auth = new AuthService();
-  fetchMock.once("http://toto/auth", { token: tokenAvailable }, { method: "POST" });
+  fetchMock.once("http://toto/auth", { status: 200, body: { token: tokenAvailable } }, { method: "POST" });
 
   auth.login("Bob", "Sponge").then(function(data: any) {
     expect(data.status).toEqual(200);
     expect(data.statusText).toEqual("OK");
     expect(data.content.token).toEqual(tokenAvailable);
+  }).catch((err) => {
+    console.log(err);
   });
 });
 
@@ -74,35 +76,208 @@ test("testing getProfile", () => {
 
 test("testing getUserInfos", () => {
   let auth = new AuthService();
-  auth.setToken(tokenAvailable);
-  fetchMock.once("http://toto/user", { hello: "world" }, { method: "GET" });
+  fetchMock.once("http://toto/user", { status: 200, body: { } }, { method: "GET" });
   auth.getUserInfos().then(function(data: any) {
     let content = {
-      hello: "world",
       message: "REST API doesn't return any message"
     };
 
     expect(data.status).toEqual(200);
     expect(data.statusText).toEqual("OK");
     expect(data.content).toEqual(content);
+  }).catch((err) => {
+    console.log(err);
+  });
+});
+
+test("testing editUser", () => {
+  let auth = new AuthService();
+  fetchMock.once("http://toto/user", { status: 200, body: { } }, { method: "PUT" });
+  auth.editUser({ id: 0, username: "toto" }).then(function(data: any) {
+    let content = {
+      message: "REST API doesn't return any message"
+    };
+
+    expect(data.status).toEqual(200);
+    expect(data.statusText).toEqual("OK");
+    expect(data.content).toEqual(content);
+  }).catch((err) => {
+    console.log(err);
+  });
+});
+
+test("testing deleteUser", () => {
+  let auth = new AuthService();
+  fetchMock.once("http://toto/user", { status: 200, body: { } }, { method: "DELETE" });
+  auth.deleteUser().then(function(data: any) {
+    let content = {
+      message: "REST API doesn't return any message"
+    };
+
+    expect(data.status).toEqual(200);
+    expect(data.statusText).toEqual("OK");
+    expect(data.content).toEqual(content);
+  }).catch((err) => {
+    console.log(err);
+  });
+});
+
+test("testing createAccount", () => {
+  let auth = new AuthService();
+  fetchMock.once("http://toto/user", { status: 200, body: { } }, { method: "POST" });
+  auth.createAccount({ id: 0, username: "toto"}).then(function(data: any) {
+    let content = {
+      message: "REST API doesn't return any message"
+    };
+
+    expect(data.status).toEqual(200);
+    expect(data.statusText).toEqual("OK");
+    expect(data.content).toEqual(content);
+  }).catch((err) => {
+    console.log(err);
+  });
+});
+
+test("testing forgotPassword", () => {
+  let auth = new AuthService();
+  fetchMock.once("http://toto/user/forgottenpassword", { status: 200, body: { } }, { method: "POST" });
+  auth.forgotPassword("bob@sponge.wa").then(function(data: any) {
+    let content = {
+      message: "REST API doesn't return any message"
+    };
+
+    expect(data.status).toEqual(200);
+    expect(data.statusText).toEqual("OK");
+    expect(data.content).toEqual(content);
+  }).catch((err) => {
+    console.log(err);
+  });
+});
+
+test("testing checkTokenPassword", () => {
+  let auth = new AuthService();
+  fetchMock.once(`http://toto/reset/${token}`, { status: 200, body: { } }, { method: "GET" });
+  auth.checkTokenPassword(token as string).then(function(data: any) {
+    let content = {
+      message: "REST API doesn't return any message"
+    };
+
+    expect(data.status).toEqual(200);
+    expect(data.statusText).toEqual("OK");
+    expect(data.content).toEqual(content);
+  }).catch((err) => {
+    console.log(err);
+  });
+});
+
+test("testing resetPassword", () => {
+  let auth = new AuthService();
+  fetchMock.once("http://toto/reset", { status: 200, body: { } }, { method: "POST" });
+  auth.resetPassword(token as string, "toto").then(function(data: any) {
+    let content = {
+      message: "REST API doesn't return any message"
+    };
+
+    expect(data.status).toEqual(200);
+    expect(data.statusText).toEqual("OK");
+    expect(data.content).toEqual(content);
+  }).catch((err) => {
+    console.log(err);
+  });
+});
+
+test("testing createDocker", () => {
+  let auth = new AuthService();
+  fetchMock.once("http://toto/containers/create", { status: 200, body: { } }, { method: "POST" });
+  auth.createDocker().then(function(data: any) {
+    let message = "Docker created.";
+
+    expect(data.status).toEqual(200);
+    expect(data.statusText).toEqual("OK");
+    expect(data.content.message).toEqual(message);
+  }).catch((err) => {
+    console.log(err);
+  });
+});
+
+test("testing deleteDocker", () => {
+  let auth = new AuthService();
+  fetchMock.once("http://toto/containers/0", { status: 204, body: { } }, { method: "DELETE" });
+  auth.deleteDocker(0).then(function(data: any) {
+    let message = "Docker deleted.";
+    expect(data.status).toEqual(204);
+    expect(data.statusText).toEqual("No Content");
+    expect(data.content.message).toEqual(message);
+  }).catch((err) => {
+    console.log(err);
+  });
+});
+
+test("testing startDocker", () => {
+  let auth = new AuthService();
+  fetchMock.once("http://toto/containers/0/start", { status: 204, body: { } }, { method: "POST" });
+  auth.startDocker(0).then(function(data: any) {
+    let message = "Docker started.";
+    expect(data.status).toEqual(204);
+    expect(data.statusText).toEqual("No Content");
+    expect(data.content.message).toEqual(message);
+  }).catch((err) => {
+    console.log(err);
+  });
+});
+
+test("testing stopDocker", () => {
+  let auth = new AuthService();
+  fetchMock.once("http://toto/containers/0/stop", { status: 204, body: { } }, { method: "POST" });
+  auth.stopDocker(0).then(function(data: any) {
+    let message = "Docker stopped.";
+    expect(data.status).toEqual(204);
+    expect(data.statusText).toEqual("No Content");
+    expect(data.content.message).toEqual(message);
+  }).catch((err) => {
+    console.log(err);
+  });
+});
+
+test("testing pauseDocker", () => {
+  let auth = new AuthService();
+  fetchMock.once("http://toto/containers/0/pause", { status: 204, body: { } }, { method: "POST" });
+  auth.pauseDocker(0).then(function(data: any) {
+    let message = "Docker paused.";
+    expect(data.status).toEqual(204);
+    expect(data.statusText).toEqual("No Content");
+    expect(data.content.message).toEqual(message);
+  }).catch((err) => {
+    console.log(err);
+  });
+});
+
+test("testing resumeDocker", () => {
+  let auth = new AuthService();
+  fetchMock.once("http://toto/containers/0/resume", { status: 204, body: { } }, { method: "POST" });
+  auth.resumeDocker(0).then(function(data: any) {
+    let message = "Docker resumed.";
+    expect(data.status).toEqual(204);
+    expect(data.statusText).toEqual("No Content");
+    expect(data.content.message).toEqual(message);
+  }).catch((err) => {
+    console.log(err);
+  });
+});
+
+test("testing statsDocker", () => {
+  let auth = new AuthService();
+  fetchMock.once("http://toto/containers/0/stats", { status: 204, body: { } }, { method: "GET" });
+  auth.statsDocker(0).then(function(data: any) {
+    expect(data.status).toEqual(204);
+    expect(data.statusText).toEqual("No Content");
+  }).catch((err) => {
+    console.log(err);
   });
 });
 
 /** TODO:
  * setToken
- * editUser
- * deleteUser
- * createAccount
- * forgotPassword
- * checkTokenPassword
- * resetPassword
- * createDocker
- * deleteDocker
- * startDocker
- * stopDocker
- * pauseDocker
- * resumeDocker
- * statsDocker
  * parseResponse
  * fetch
  */
