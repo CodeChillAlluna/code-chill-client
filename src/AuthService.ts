@@ -135,14 +135,9 @@ export default class AuthService {
     }
 
     createDocker(name: string) {
-        console.log("YOLO");
-        console.log(name);
-        var formData = new FormData();
-        formData.append("name", name);
-
         return this.fetch(`${this.domain}/containers/create`, {
             method: "POST",
-            body: formData
+            body: JSON.stringify({ "name": name })
         }).then((res) => {
             if (res.status === 200) {
                 res["content"]["message"] = "Docker created.";

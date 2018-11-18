@@ -20,7 +20,6 @@ class DashMenu extends React.Component<any, any> {
             "activeIndex": 0,
             "modalAddValidation": false,
             "addDockerName": "",
-
         };
         this.Auth = new AuthService();
         this.addDocker = this.addDocker.bind(this);
@@ -88,7 +87,7 @@ class DashMenu extends React.Component<any, any> {
                     <Grid.Column>
                         <Container textAlign="right">
                             <h2>
-                                <small>Add new docker </small>
+                                <small>Add new environment </small>
                                 <Icon 
                                     color="green" 
                                     name="plus square outline" 
@@ -101,21 +100,20 @@ class DashMenu extends React.Component<any, any> {
                                     open={this.state.modalAddValidation}
                                     onClose={this.closeAddModal}
                                 >
-                                    <Header icon="plus square outline" content="Add docker ?" />
+                                    <Header icon="plus square outline" content="Add environment?" />
                                     <Modal.Content>
-                                    (A-Z, a-z, 0-9 and '_' only)
                                         <p>
                                         Accepted characters: A-Z, a-z, 0-9 and '_'.
                                         </p>
                                         <Input
                                             required={true}
                                             name="addDockerName"
-                                            placeholder="New Docker name"
+                                            placeholder="New Environment name"
                                             onChange={this.handleChange}
                                         />
                                         <br/>
                                         <p>
-                                        Would you like to add this docker ?
+                                        Would you like to add this new environment?
                                         </p>
                                     </Modal.Content>
                                     <Modal.Actions>
