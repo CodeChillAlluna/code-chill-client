@@ -1,7 +1,8 @@
 import * as React from "react";
-import { Grid, List, Header, Container, Icon , Modal, Button } from "semantic-ui-react";
+import { Grid, List, Header, Container, Icon , Modal, Button, Input } from "semantic-ui-react";
 import DashGraph from "./DashGraph";
 import { toast } from "react-toastify";
+import * as ToastConfig from "../../constants/toast.config";
 
 class DashDocker extends React.Component<any, any> {
     userUpdate: Object;
@@ -25,7 +26,9 @@ class DashDocker extends React.Component<any, any> {
             "dockerRunning": false,
             "dockerPaused": false,
             "dockerExited": false,
-            "modalDeleteValidation": false
+            "modalDeleteValidation": false,
+            "isNameEditing": false,
+            "editDockerName": ""
         };
         this.startDocker = this.startDocker.bind(this);
         this.stopDocker = this.stopDocker.bind(this);
@@ -33,6 +36,8 @@ class DashDocker extends React.Component<any, any> {
         this.resumeDocker = this.resumeDocker.bind(this);
         this.statsDocker = this.statsDocker.bind(this);
         this.deleteDocker = this.deleteDocker.bind(this);
+        this.editDockerName = this.editDockerName.bind(this);
+        this.handleChange = this.handleChange.bind(this);
 
         this.statsDocker();
 
@@ -191,6 +196,32 @@ class DashDocker extends React.Component<any, any> {
             clearInterval(this.interval);
         }
     }
+    
+    editDockerName(e: any) {
+        if (this.state.isNameEditing) {
+            if (this.state.editDockerName === "") {
+                toast("No new name was entered.", ToastConfig.WARNING);
+            } else if (/\W/.test(this.state.editDockerName)) {
+                toast("Only A-Z, a-z, 0-9 and '_' are accepted.", ToastConfig.WARNING);
+            } else {
+                this.props.Auth.renameDocker(this.props.docker.id, this.state.editDockerName).then((res) => {
+                    toast(res.content.message, res.content.toast);
+                    if (res.status === 204) {
+                        this.setState({
+                            dockerName: this.state.editDockerName
+                        });
+                    }
+                });
+            }
+            this.setState({isNameEditing: false});
+        } else {
+            this.setState({isNameEditing: true});
+        }
+    }
+    
+    handleChange(e: any) {
+        this.setState({editDockerName: e.target.value});
+    }
 
     showDeleteModal = () => this.setState({ modalDeleteValidation: true });
     closeDeleteModal = () => this.setState({ modalDeleteValidation: false });
@@ -199,9 +230,26 @@ class DashDocker extends React.Component<any, any> {
         return (
             <div>
                 <Grid>
-                    <Grid.Row columns={2}>
+                    <Grid.Row columns={3}>
+                        <Grid.Column width={1}>
+                            <Icon
+                                color="blue"
+                                name={this.state.isNameEditing ? "edit outline" : "edit"}
+                                style={{ cursor: "pointer" }} 
+                                onClick={this.editDockerName} 
+                            />
+                        </Grid.Column>
                         <Grid.Column>
-                            <Header as="h3">{this.state.dockerName}</Header>
+                            {
+                                this.state.isNameEditing
+                                ? <Input
+                                    required={true}
+                                    name="editDockerName"
+                                    placeholder={this.state.dockerName}
+                                    onChange={this.handleChange}
+                                />
+                                : <Header as="h3">{this.state.dockerName}</Header>
+                            }
                         </Grid.Column>
                         <Grid.Column>
                             <Container textAlign="right">

@@ -225,6 +225,23 @@ export default class AuthService {
         });
     }
 
+    renameDocker(id: number, name: string) {
+        return this.fetch(`${this.domain}/containers/${id}/rename/${name}`, {
+            method: "POST",
+        }).then((res) => {
+            if (res.status === 204) {
+                res["content"]["message"] = "Environment renamed.";
+                res["content"]["toast"] = ToastConfig.SUCCESS;
+            } else {
+                if (res["content"]["message"] === "REST API doesn't return any message") {
+                    res["content"]["message"] = "Error trying to rename environment.";
+                }
+                res["content"]["toast"] = ToastConfig.ERROR;
+            }
+            return Promise.resolve(res);
+        });
+    }
+
     statsDocker(id: number) {
         return this.fetch(`${this.domain}/containers/${id}/stats`, {
             method: "GET",
