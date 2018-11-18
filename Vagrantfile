@@ -16,7 +16,7 @@ Vagrant.configure("2") do |config|
   config.vm.hostname = "CodeChillClient"
   
   config.vm.provider "virtualbox" do |v|
-    v.memory = 2048
+    v.memory = 1024
   end
 
   # Disable automatic box update checking. If you disable this, then

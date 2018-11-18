@@ -189,7 +189,7 @@ test("testing resetPassword", () => {
 test("testing createDocker", () => {
   let auth = new AuthService();
   fetchMock.once("http://toto/containers/create", { status: 200, body: { } }, { method: "POST" });
-  auth.createDocker().then(function(data: any) {
+  auth.createDocker("toto").then(function(data: any) {
     let message = "Docker created.";
 
     expect(data.status).toEqual(200);
@@ -200,7 +200,7 @@ test("testing createDocker", () => {
   });
   fetchMock.restore();
   fetchMock.once("http://toto/containers/create", { status: 304, body: { } }, { method: "POST" });
-  auth.createDocker().then(function(data: any) {
+  auth.createDocker("toto").then(function(data: any) {
     let message = "Cannot create a new docker.";
 
     expect(data.status).toEqual(304);
