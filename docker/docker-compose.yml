@@ -1,0 +1,12 @@
+version: "3.3"
+
+services:
+  code-chill-client:
+    build:
+        context: .
+        dockerfile: DockerFile
+    image: codechillaluna/code-chill-client
+    volumes:
+    - $HOME/config/config.js:/www/config.js
+    ports:
+    - "3000:80"
