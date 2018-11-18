@@ -336,9 +336,3 @@ test("testing statsDocker", () => {
     console.log(err);
   });
 });
-
-test("testing fetch", () => {
-  let auth = new AuthService();
-  fetchMock.once("http://toto/user", { status: 200, body: { } }, { method: "GET" });
-  expect(auth.fetch("http://toto/toto", { method: "GET" })).toThrow();
-});
