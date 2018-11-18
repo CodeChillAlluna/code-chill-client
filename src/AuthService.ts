@@ -134,9 +134,10 @@ export default class AuthService {
         });
     }
 
-    createDocker() {
+    createDocker(name: string) {
         return this.fetch(`${this.domain}/containers/create`, {
             method: "POST",
+            body: JSON.stringify({ "name": name })
         }).then((res) => {
             if (res.status === 200) {
                 res["content"]["message"] = "Docker created.";
