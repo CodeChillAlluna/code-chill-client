@@ -117,7 +117,7 @@ export default class NavBar extends React.Component<any, any> {
 
     private handleLogout() {
         this.Auth.logout();
-        this.props.history.replace("/");
+        this.props.history.replace(formatRoute(LOGIN));
     }
 
     private handlePusher() {
