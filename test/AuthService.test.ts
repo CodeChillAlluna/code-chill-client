@@ -326,6 +326,29 @@ test("testing resumeDocker", () => {
   });
 });
 
+test("testing renameDocker", () => {
+  let auth = new AuthService();
+  fetchMock.once("http://toto/containers/0/rename/toto", { status: 204, body: { } }, { method: "POST" });
+  auth.renameDocker(0, "toto").then(function(data: any) {
+    let message = "Environment renamed.";
+    expect(data.status).toEqual(204);
+    expect(data.statusText).toEqual("No Content");
+    expect(data.content.message).toEqual(message);
+  }).catch((err) => {
+    console.log(err);
+  });
+  fetchMock.restore();
+  fetchMock.once("http://toto/containers/0/rename/toto", { status: 500, body: { } }, { method: "POST" });
+  auth.renameDocker(0, "toto").then(function(data: any) {
+    let message = "Error trying to rename environment.";
+    expect(data.status).toEqual(500);
+    expect(data.statusText).toEqual("Internal Server Error");
+    expect(data.content.message).toEqual(message);
+  }).catch((err) => {
+    console.log(err);
+  });
+});
+
 test("testing statsDocker", () => {
   let auth = new AuthService();
   fetchMock.once("http://toto/containers/0/stats", { status: 204, body: { } }, { method: "GET" });
