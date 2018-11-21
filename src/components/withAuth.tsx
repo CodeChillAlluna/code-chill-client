@@ -3,6 +3,7 @@ import AuthService from "../AuthService";
 import NavBar from "./NavBar";
 import { formatRoute } from "react-router-named-routes";
 import { LOGIN } from "../Routes";
+import { toast } from "react-toastify";
 
 export default function withAuth(AuthComponent: any) {
     const Auth = new AuthService();
@@ -21,10 +22,16 @@ export default function withAuth(AuthComponent: any) {
                 try {
                     const profile = Auth.getProfile();
                     Auth.getUserInfos().then((res) => {
-                        this.setState({
-                            token: profile,
-                            user: res.content
-                        });
+                        toast(res.content.message, res.content.toast);
+                        if (res.status === 401) {
+                            Auth.logout();
+                            this.props.history.replace(formatRoute(LOGIN));
+                        } else {
+                            this.setState({
+                                token: profile,
+                                user: res.content
+                            });
+                        }
                     });
                 } catch (err) {
                     Auth.logout();

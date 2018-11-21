@@ -74,6 +74,10 @@ export default class AuthService {
         return this.fetch(`${this.domain}/user`, {
             method: "GET",
          }).then((res) => {
+            if (res.status === 401) {
+                res["content"]["message"] = "Account does not exist!";
+                res["content"]["toast"] = ToastConfig.ERROR;
+            }
             return Promise.resolve(res);
         });
     }
@@ -130,9 +134,10 @@ export default class AuthService {
         });
     }
 
-    createDocker() {
+    createDocker(name: string) {
         return this.fetch(`${this.domain}/containers/create`, {
             method: "POST",
+            body: JSON.stringify({ "name": name })
         }).then((res) => {
             if (res.status === 200) {
                 res["content"]["message"] = "Docker created.";
@@ -215,6 +220,23 @@ export default class AuthService {
             } else {
                 res["content"]["message"] = "Docker needs to be on pause to be resumed.";
                 res["content"]["toast"] = ToastConfig.WARNING;
+            }
+            return Promise.resolve(res);
+        });
+    }
+
+    renameDocker(id: number, name: string) {
+        return this.fetch(`${this.domain}/containers/${id}/rename/${name}`, {
+            method: "POST",
+        }).then((res) => {
+            if (res.status === 204) {
+                res["content"]["message"] = "Environment renamed.";
+                res["content"]["toast"] = ToastConfig.SUCCESS;
+            } else {
+                if (res["content"]["message"] === "REST API doesn't return any message") {
+                    res["content"]["message"] = "Error trying to rename environment.";
+                }
+                res["content"]["toast"] = ToastConfig.ERROR;
             }
             return Promise.resolve(res);
         });

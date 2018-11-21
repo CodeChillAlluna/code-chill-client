@@ -13,8 +13,9 @@ build_dockerfile() {
     cd $docker_path
     cp -r ../build build
     rm build/config.js
-    ls build
-    docker build -f DockerFile -t codechill/client .
+    mkdir $HOME/config
+    cp config/config.js $HOME/config/config.js
+    docker-compose build
     cd ..
     rm -r $docker_build
 }

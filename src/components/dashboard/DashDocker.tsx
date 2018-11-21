@@ -1,9 +1,10 @@
 import * as React from "react";
-import { Grid, List, Header, Container, Icon , Modal, Button, Loader } from "semantic-ui-react";
+import { Grid, List, Header, Container, Icon , Modal, Button, Loader, Input } from "semantic-ui-react";
 import DashGraph from "./DashGraph";
 import { toast } from "react-toastify";
 import { IDE } from "../../Routes";
 import { formatRoute } from "react-router-named-routes";
+import * as ToastConfig from "../../constants/toast.config";
 
 class DashDocker extends React.Component<any, any> {
     userUpdate: Object;
@@ -29,7 +30,9 @@ class DashDocker extends React.Component<any, any> {
             "dockerExited": false,
             "modalDeleteValidation": false,
             "modalStartIDE": false,
-            "modalStartIDEValidated": false
+            "modalStartIDEValidated": false,
+            "isNameEditing": false,
+            "editDockerName": ""
         };
         this.startDocker = this.startDocker.bind(this);
         this.stopDocker = this.stopDocker.bind(this);
@@ -37,6 +40,8 @@ class DashDocker extends React.Component<any, any> {
         this.resumeDocker = this.resumeDocker.bind(this);
         this.statsDocker = this.statsDocker.bind(this);
         this.deleteDocker = this.deleteDocker.bind(this);
+        this.editDockerName = this.editDockerName.bind(this);
+        this.handleChange = this.handleChange.bind(this);
 
         this.statsDocker();
 
@@ -195,6 +200,32 @@ class DashDocker extends React.Component<any, any> {
             clearInterval(this.interval);
         }
     }
+    
+    editDockerName(e: any) {
+        if (this.state.isNameEditing) {
+            if (this.state.editDockerName === "") {
+                toast("No new name was entered.", ToastConfig.WARNING);
+            } else if (/\W/.test(this.state.editDockerName)) {
+                toast("Only A-Z, a-z, 0-9 and '_' are accepted.", ToastConfig.WARNING);
+            } else {
+                this.props.Auth.renameDocker(this.props.docker.id, this.state.editDockerName).then((res) => {
+                    toast(res.content.message, res.content.toast);
+                    if (res.status === 204) {
+                        this.setState({
+                            dockerName: this.state.editDockerName
+                        });
+                    }
+                });
+            }
+            this.setState({isNameEditing: false});
+        } else {
+            this.setState({isNameEditing: true});
+        }
+    }
+    
+    handleChange(e: any) {
+        this.setState({editDockerName: e.target.value});
+    }
 
     showDeleteModal = () => this.setState({ modalDeleteValidation: true });
     showStartIDEModal = () => this.state.dockerRunning ? this.redirectIDE() : this.setState({ modalStartIDE: true });
@@ -219,54 +250,74 @@ class DashDocker extends React.Component<any, any> {
         return (
             <div>
                 <Grid>
-                    <Grid.Row columns={2}>
+                    <Grid.Row columns={3}>
+                        <Grid.Column width={1}>
+                            <Icon
+                                color="blue"
+                                name={this.state.isNameEditing ? "edit outline" : "edit"}
+                                style={{ cursor: "pointer" }} 
+                                onClick={this.editDockerName} 
+                            />
+                        </Grid.Column>
                         <Grid.Column>
-                            <Header as="h3" onClick={this.showStartIDEModal} style={{ cursor: "pointer" }}>
-                                {this.state.dockerName}
-                            </Header>
-                            <Modal
-                                basic={true} 
-                                size="small"
-                                open={this.state.modalStartIDE}
-                                onClose={this.closeStartIDEModal}
-                            >
-                            {!this.state.modalStartIDEValidated
-                            ?
-                            <div>
-                                <Modal.Content>
-                                    <p>
-                                    Environment needs to be running before going to your code editor.
-                                    </p>
-                                    <p>
-                                    Would you like to turn it on ?
-                                    </p>
-                                </Modal.Content>
-                            </div>
-                            :
-                            <div>
-                                <Modal.Content>
-                                    <p>
-                                        <Loader active={true} inline={true} /> Loading environnement.
-                                    </p>
-                                </Modal.Content>
-                            </div>
-                            }
-                            <Modal.Actions>
-                                {!this.state.modalStartIDEValidated
-                                ?
+                            {
+                                this.state.isNameEditing
+                                ? <Input
+                                    required={true}
+                                    name="editDockerName"
+                                    placeholder={this.state.dockerName}
+                                    onChange={this.handleChange}
+                                />
+                                : 
                                 <div>
-                                    <Button color="red" inverted={true} onClick={this.closeStartIDEModal}>
-                                    <Icon name="remove" /> No
-                                    </Button>
-                                    <Button color="green" inverted={true} onClick={this.handlerBeforeIDE}>
-                                    <Icon name="play"/> Yes
-                                    </Button>
+                                    <Header as="h3" onClick={this.showStartIDEModal} style={{ cursor: "pointer" }}>
+                                        {this.state.dockerName}
+                                    </Header>
+                                    <Modal
+                                        basic={true} 
+                                        size="small"
+                                        open={this.state.modalStartIDE}
+                                        onClose={this.closeStartIDEModal}
+                                    >
+                                    {!this.state.modalStartIDEValidated
+                                    ?
+                                    <div>
+                                        <Modal.Content>
+                                            <p>
+                                            Environment needs to be running before going to your code editor.
+                                            </p>
+                                            <p>
+                                            Would you like to turn it on ?
+                                            </p>
+                                        </Modal.Content>
+                                    </div>
+                                    :
+                                    <div>
+                                        <Modal.Content>
+                                            <p>
+                                                <Loader active={true} inline={true} /> Loading environnement.
+                                            </p>
+                                        </Modal.Content>
+                                    </div>
+                                    }
+                                    <Modal.Actions>
+                                        {!this.state.modalStartIDEValidated
+                                        ?
+                                        <div>
+                                            <Button color="red" inverted={true} onClick={this.closeStartIDEModal}>
+                                            <Icon name="remove" /> No
+                                            </Button>
+                                            <Button color="green" inverted={true} onClick={this.handlerBeforeIDE}>
+                                            <Icon name="play"/> Yes
+                                            </Button>
+                                        </div>
+                                        :
+                                        null
+                                        }
+                                    </Modal.Actions>
+                                    </Modal>
                                 </div>
-                                :
-                                null
-                                }
-                            </Modal.Actions>
-                            </Modal>
+                            }
                         </Grid.Column>
                         <Grid.Column>
                             <Container textAlign="right">
