@@ -16,6 +16,12 @@ export default class UserSignUp extends React.Component<any, any> {
         this.Auth = new AuthService();
         this.state = {
             "user": {
+                "username": "",
+                "email": "",
+                "firstname": "",
+                "lastname": "",
+                "password": "",
+                "password2": "",
                 "enabled": true,
                 "lastPasswordResetDate": new Date().getTime()
             },
@@ -48,6 +54,10 @@ export default class UserSignUp extends React.Component<any, any> {
     }
 
     handleChangeUN(e: any) {
+        var newState = Object.assign({}, this.state);
+        newState.user[e.target.name] = e.target.value;
+        this.setState(newState);
+        
         if (this.checkSize(5, 100, e.target.value.length)) {
             this.setState({usernameSize: false});
         } else {
@@ -58,41 +68,49 @@ export default class UserSignUp extends React.Component<any, any> {
         } else {
             this.setState({usernameChar: true});
         }
-
-        this.setState({[e.target.name]: e.target.value});
     }
 
     handleChangeM(e: any) {
+        var newState = Object.assign({}, this.state);
+        newState.user[e.target.name] = e.target.value;
+        this.setState(newState);
+
         if (this.checkSize(4, 100, e.target.value.length)) {
             this.setState({emailSize: false});
         } else {
             this.setState({emailSize: true});
         }
-
-        this.setState({[e.target.name]: e.target.value});
     }
 
     handleChangeFN(e: any) {
+        var newState = Object.assign({}, this.state);
+        newState.user[e.target.name] = e.target.value;
+        this.setState(newState);
+
         if (this.checkSize(3, 100, e.target.value.length)) {
             this.setState({firstnameSize: false});
         } else {
             this.setState({firstnameSize: true});
         }
-
-        this.setState({[e.target.name]: e.target.value});
     }
 
     handleChangeLN(e: any) {
+        var newState = Object.assign({}, this.state);
+        newState.user[e.target.name] = e.target.value;
+        this.setState(newState);
+
         if (this.checkSize(3, 100, e.target.value.length)) {
             this.setState({lastnameSize: false});
         } else {
             this.setState({lastnameSize: true});
         }
-
-        this.setState({[e.target.name]: e.target.value});
     }
 
     handleChangeP(e: any) {
+        var newState = Object.assign({}, this.state);
+        newState.user[e.target.name] = e.target.value;
+        this.setState(newState);
+
         if (this.checkSize(4, 100, e.target.value.length)) {
             this.setState({passwordSize: false});
         } else {
@@ -107,25 +125,25 @@ export default class UserSignUp extends React.Component<any, any> {
         } else {
             this.setState({passwordChar: false});
         }
-        if (typeof(this.state.password2) !== "undefined") {
-            if (e.target.value === this.state.password2) {
+        if (typeof(this.state.user.password2) !== "undefined") {
+            if (e.target.value === this.state.user.password2) {
                 this.setState({passwordcCompare: false});
             } else {
                 this.setState({passwordcCompare: true});
             }
         }
-
-        this.setState({[e.target.name]: e.target.value});
     }
 
     handleChangePC(e: any) {
-        if (this.state.password === e.target.value) {
+        var newState = Object.assign({}, this.state);
+        newState.user[e.target.name] = e.target.value;
+        this.setState(newState);
+        
+        if (this.state.user.password === e.target.value) {
             this.setState({passwordcCompare: false});
         } else {
             this.setState({passwordcCompare: true});
         }
-
-        this.setState({[e.target.name]: e.target.value});
     }
 
     render() {
@@ -339,6 +357,9 @@ export default class UserSignUp extends React.Component<any, any> {
     private handleFormSubmit(e: any) {
         e.preventDefault();
         const user = this.state.user;
+        console.log("WAT DE FUK");
+        console.log(user);
+        console.log(this.state.user);
 
         if (this.checkErr()) {
             this.setState({errCheck: true});
