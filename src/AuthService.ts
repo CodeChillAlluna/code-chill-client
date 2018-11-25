@@ -104,6 +104,10 @@ export default class AuthService {
             method: "POST",
             body: JSON.stringify(user)
         }).then((res) => {
+            if (res.status === 400) {
+                res["content"]["message"] = "Username or Email is already in use!";
+                res["content"]["toast"] = ToastConfig.ERROR;
+            }
             return Promise.resolve(res);
         });
     }

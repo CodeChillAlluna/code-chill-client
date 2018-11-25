@@ -5,6 +5,8 @@ import { Button, Form, Grid, Header, Image, Message, Segment, Label } from "sema
 import { Link } from "react-router-dom";
 import { formatRoute } from "react-router-named-routes";
 import { HOME, LOGIN } from "../../Routes";
+import { toast } from "react-toastify";
+
 const logo = require("../../resources/logocodeandchill.png");
 
 export default class UserSignUp extends React.Component<any, any> {
@@ -357,26 +359,27 @@ export default class UserSignUp extends React.Component<any, any> {
     private handleFormSubmit(e: any) {
         e.preventDefault();
         const user = this.state.user;
-        console.log("WAT DE FUK");
-        console.log(user);
-        console.log(this.state.user);
 
         if (this.checkErr()) {
             this.setState({errCheck: true});
         } else {
             this.setState({errCheck: false});
             this.Auth.createAccount(user).then((res) => {
-                this.setState(
-                    {
-                        "message": (
-                            <Message positive={true}>
-                                <Message.Header>Your user registration was successful</Message.Header>
-                                <p>You may now <Link to={formatRoute(LOGIN)}>log-in </Link>
-                                with the username you have chosen</p>
-                            </Message>
-                        )
-                    }
-                );
+                if (res.status === 400) {
+                    toast(res.content.message, res.content.toast);
+                } else {
+                    this.setState(
+                        {
+                            "message": (
+                                <Message positive={true}>
+                                    <Message.Header>Your user registration was successful</Message.Header>
+                                    <p>You may now <Link to={formatRoute(LOGIN)}>log-in </Link>
+                                    with the username you have chosen</p>
+                                </Message>
+                            )
+                        }
+                    );
+                }
             });
         }
     }
