@@ -136,6 +136,17 @@ test("testing createAccount", () => {
   }).catch((err) => {
     console.log(err);
   });
+  fetchMock.restore();
+  fetchMock.once("http://toto/user", { status: 400, body: { } }, { method: "POST" });
+  auth.createAccount({ id: 0, username: "toto"}).then(function(data: any) {
+    let message = "Username or Email is already in use!";
+
+    expect(data.status).toEqual(400);
+    expect(data.statusText).toEqual("Bad Request");
+    expect(data.content.message).toEqual(message);
+  }).catch((err) => {
+    console.log(err);
+  });
 });
 
 test("testing forgotPassword", () => {
