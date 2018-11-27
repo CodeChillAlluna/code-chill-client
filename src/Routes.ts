@@ -7,4 +7,5 @@ export const SIGNUP = "/signup";
 export const TERMINAL = "/term";
 export const IDE = "/env/:id";
 export const DASHBOARD = "/dashboard";
+export const ERRORSERVER = "/internalerror";
 export const NOTFOUND = "*";
