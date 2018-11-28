@@ -4,27 +4,24 @@ import withAuth from "./withAuth";
 
 class CodeChillIDE extends React.Component<any, any> {
     Auth: AuthService;
-    port: number;
+    docker: object;
+    src: string;
+
     constructor(props: any) {
         super(props);
         this.Auth = new AuthService();
-        this.port = this.props.user.dockers[0].port;
-    }
-
-    componentDidMount() {
-        this.Auth.startDocker(this.props.user.dockers[0].id).then((res) => { ""; });
-    }
-
-    componentWillUnmount() {
-        this.Auth.stopDocker(this.props.user.dockers[0].id).then((res) => { ""; });
+        this.docker = this.props.user.dockers.find(
+            (docker: any) => docker.id === Number(this.props.props.match.params.id)
+        );
+        this.src = `${(window as any).env.docker}:${this.docker["port"]}`;
     }
 
     render() {
         let height = window.innerHeight - 61;
         return (
             <iframe
-                src={`${(window as any).env.docker}:${this.props.user.dockers[0].port}`}
-                style={{ 
+                src={this.src}
+                style={{
                     right: 0,
                     top: 61,
                     position: "absolute",
@@ -34,7 +31,6 @@ class CodeChillIDE extends React.Component<any, any> {
             />
         );
     }
-
 }
 
 export default withAuth(CodeChillIDE);
