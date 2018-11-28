@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Grid, List, Header, Container, Icon , Modal, Button, Loader, Input } from "semantic-ui-react";
+import { Grid, List, Header, Container, Icon , Modal, Button, Input, Popup, Loader } from "semantic-ui-react";
 import DashGraph from "./DashGraph";
 import { toast } from "react-toastify";
 import { IDE } from "../../Routes";
@@ -252,14 +252,24 @@ class DashDocker extends React.Component<any, any> {
                 <Grid>
                     <Grid.Row columns={3}>
                         <Grid.Column width={1}>
-                            <Icon
-                                color="blue"
-                                name={this.state.isNameEditing ? "edit outline" : "edit"}
-                                style={{ cursor: "pointer" }} 
-                                onClick={this.editDockerName} 
+                            <Popup
+                                trigger={
+                                    <Icon
+                                        color="blue"
+                                        name={this.state.isNameEditing ? "edit outline" : "edit"}
+                                        style={{ cursor: "pointer" }} 
+                                        onClick={this.editDockerName} 
+                                    />
+                                }
+                                horizontalOffset={12}
+                                content={
+                                    this.state.isNameEditing
+                                    ? "Confirm edit"
+                                    : "Edit environment name"
+                                }
                             />
                         </Grid.Column>
-                        <Grid.Column>
+                        <Grid.Column width={13}>
                             {
                                 this.state.isNameEditing
                                 ? <Input
@@ -319,54 +329,85 @@ class DashDocker extends React.Component<any, any> {
                                 </div>
                             }
                         </Grid.Column>
-                        <Grid.Column>
+                        <Grid.Column width={2}>
                             <Container textAlign="right">
                                 { 
                                     (this.state.dockerCreated || this.state.dockerExited)
-                                    ? <Icon 
-                                        color="green" 
-                                        name="play" 
-                                        style={{ cursor: "pointer" }} 
-                                        onClick={this.startDocker} 
+                                    ? <Popup
+                                        trigger={
+                                            <Icon 
+                                                color="green" 
+                                                name="play" 
+                                                style={{ cursor: "pointer" }} 
+                                                onClick={this.startDocker} 
+                                            />
+                                        }
+                                        horizontalOffset={12}
+                                        content="Start the environment"
                                     />
                                     : null
                                 }
                                 { 
                                     this.state.dockerRunning
-                                    ? <Icon 
-                                        color="teal" 
-                                        name="pause" 
-                                        style={{ cursor: "pointer" }} 
-                                        onClick={this.pauseDocker}
+                                    ? <Popup
+                                        trigger={
+                                            <Icon 
+                                                color="teal" 
+                                                name="pause" 
+                                                style={{ cursor: "pointer" }} 
+                                                onClick={this.pauseDocker}
+                                            />
+                                        }
+                                        horizontalOffset={12}
+                                        content="Pause the environment"
                                     />
                                     : null
                                 }
                                 { 
                                     this.state.dockerPaused
-                                    ? <Icon 
-                                        color="teal" 
-                                        name="forward" 
-                                        style={{ cursor: "pointer" }} 
-                                        onClick={this.resumeDocker}
+                                    ? <Popup
+                                        trigger={
+                                            <Icon 
+                                                color="teal" 
+                                                name="forward" 
+                                                style={{ cursor: "pointer" }} 
+                                                onClick={this.resumeDocker}
+                                            />
+                                        }
+                                        horizontalOffset={12}
+                                        content="Resume the environment"
                                     />
                                     : null
                                 }
                                 { 
                                     (this.state.dockerRunning || this.state.dockerPaused)
-                                    ?  <Icon 
-                                        color="red" 
-                                        name="power off" 
-                                        style={{ cursor: "pointer" }} 
-                                        onClick={this.stopDocker}
+                                    ?  <Popup
+                                        trigger={
+                                            <Icon 
+                                                color="red" 
+                                                name="power off" 
+                                                style={{ cursor: "pointer" }} 
+                                                onClick={this.stopDocker}
+                                            />
+                                        }
+                                        horizontalOffset={12}
+                                        content="Stop the environment"
                                     />
                                     : null
                                 }
-                                <Icon 
-                                    color="red" 
-                                    name="trash" 
-                                    style={{ cursor: "pointer" }}
-                                    onClick={this.showDeleteModal}
+                                <Popup
+                                    trigger={
+                                        <Icon 
+                                            color="red" 
+                                            name="trash" 
+                                            style={{ cursor: "pointer" }}
+                                            onClick={this.showDeleteModal}
+                                        />
+                                    }
+                                    horizontalOffset={12}
+                                    content="Delete the environment"
                                 />
+                                
                                 <Modal
                                     basic={true} 
                                     size="small"
@@ -376,15 +417,15 @@ class DashDocker extends React.Component<any, any> {
                                 <Header icon="trash" content="Delete docker ?" />
                                 <Modal.Content>
                                     <p>
-                                    Would you like to delete this docker ?
+                                        Would you like to delete this docker ?
                                     </p>
                                 </Modal.Content>
                                 <Modal.Actions>
                                     <Button color="red" inverted={true} onClick={this.closeDeleteModal}>
-                                    <Icon name="remove" /> No
+                                        <Icon name="remove" /> No
                                     </Button>
                                     <Button color="green" inverted={true} onClick={this.deleteDocker}>
-                                    <Icon name="checkmark"/> Yes
+                                        <Icon name="checkmark"/> Yes
                                     </Button>
                                 </Modal.Actions>
                                 </Modal>
