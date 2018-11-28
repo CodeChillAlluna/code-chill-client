@@ -2,6 +2,8 @@ import * as React from "react";
 import { Grid, List, Header, Container, Icon , Modal, Button, Input, Popup } from "semantic-ui-react";
 import DashGraph from "./DashGraph";
 import { toast } from "react-toastify";
+import { IDE } from "../../Routes";
+import { formatRoute } from "react-router-named-routes";
 import * as ToastConfig from "../../constants/toast.config";
 
 class DashDocker extends React.Component<any, any> {
@@ -27,6 +29,8 @@ class DashDocker extends React.Component<any, any> {
             "dockerPaused": false,
             "dockerExited": false,
             "modalDeleteValidation": false,
+            "modalStartIDE": false,
+            "modalStartIDEValidated": false,
             "isNameEditing": false,
             "editDockerName": ""
         };
@@ -189,7 +193,7 @@ class DashDocker extends React.Component<any, any> {
                 dockerCreated: dockerCreated,
                 dockerRunning: dockerRunning,
                 dockerPaused: dockerPaused,
-                dockerExited: dockerExited
+                dockerExited: dockerExited,
             });
         });
         if (this.state.dockerCreated || this.state.dockerExited) {
@@ -224,7 +228,23 @@ class DashDocker extends React.Component<any, any> {
     }
 
     showDeleteModal = () => this.setState({ modalDeleteValidation: true });
+    showStartIDEModal = () => this.state.dockerRunning ? this.redirectIDE() : this.setState({ modalStartIDE: true });
     closeDeleteModal = () => this.setState({ modalDeleteValidation: false });
+    closeStartIDEModal = () => this.setState({ modalStartIDE: false });
+    redirectIDE = () => this.props.parentProps.history.push(formatRoute(IDE, {id: this.props.docker.id}));
+
+    handlerBeforeIDE = () => {
+        if (this.state.dockerPaused) {
+            this.resumeDocker();
+            this.redirectIDE();
+        }
+
+        if (this.state.dockerExited || this.state.dockerCreated) {
+            this.setState({ modalStartIDEValidated: true });
+            this.startDocker();
+            setTimeout(() => this.redirectIDE(), 3000);
+        }
+    }
 
     render() {
         return (
@@ -258,7 +278,55 @@ class DashDocker extends React.Component<any, any> {
                                     placeholder={this.state.dockerName}
                                     onChange={this.handleChange}
                                 />
-                                : <Header as="h3">{this.state.dockerName}</Header>
+                                : 
+                                <div>
+                                    <Header as="h3" onClick={this.showStartIDEModal} style={{ cursor: "pointer" }}>
+                                        {this.state.dockerName}
+                                    </Header>
+                                    <Modal
+                                        basic={true} 
+                                        size="small"
+                                        open={this.state.modalStartIDE}
+                                        onClose={this.closeStartIDEModal}
+                                    >
+                                    {!this.state.modalStartIDEValidated
+                                    ?
+                                    <div>
+                                        <Modal.Content>
+                                            <p>
+                                            Environment needs to be running before going to your code editor.
+                                            </p>
+                                            <p>
+                                            Would you like to turn it on ?
+                                            </p>
+                                        </Modal.Content>
+                                    </div>
+                                    :
+                                    <div>
+                                        <Modal.Content>
+                                            <p>
+                                                <Loader active={true} inline={true} /> Loading environnement.
+                                            </p>
+                                        </Modal.Content>
+                                    </div>
+                                    }
+                                    <Modal.Actions>
+                                        {!this.state.modalStartIDEValidated
+                                        ?
+                                        <div>
+                                            <Button color="red" inverted={true} onClick={this.closeStartIDEModal}>
+                                            <Icon name="remove" /> No
+                                            </Button>
+                                            <Button color="green" inverted={true} onClick={this.handlerBeforeIDE}>
+                                            <Icon name="play"/> Yes
+                                            </Button>
+                                        </div>
+                                        :
+                                        null
+                                        }
+                                    </Modal.Actions>
+                                    </Modal>
+                                </div>
                             }
                         </Grid.Column>
                         <Grid.Column width={2}>
@@ -369,7 +437,7 @@ class DashDocker extends React.Component<any, any> {
                             <List>
                                 <List.Item>
                                     <List.Header>ID</List.Header>
-                                    {this.state.dockerIdContainer}
+                                    {this.props.docker.id}
                                 </List.Item>
                                 <List.Item>
                                     <List.Header>Image</List.Header>

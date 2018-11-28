@@ -289,8 +289,7 @@ export default class AuthService {
             .then((res) => {
                 return Promise.resolve(this.parseResponse(res));
             }).catch((error) => {
-                // TODO : change error handling
-                return Promise.resolve(this.parseResponse(error));
+                return Promise.resolve({ "content": { "error": true, "message": error.message } });
             });
     }
 }

@@ -9,6 +9,7 @@ import UserSignUp from "./user/UserSignUp";
 import UserProfile from "./user/UserProfile";
 import DashMenu from "./dashboard/DashMenu";
 import NotFound from "./NotFound";
+import InternalError from "./InternalError";
 import UserForgotPassword from "./user/UserForgotPassword";
 import UserResetPassword from "./user/UserResetPassword";
 import { ToastContainer } from "react-toastify";
@@ -68,6 +69,11 @@ export default class CodeChillRouter extends React.Component<any, any> {
                             exact={true}
                             path={R.DASHBOARD}
                             component={DashMenu}
+                        />
+                        <Route
+                            exact={true}
+                            path={R.ERRORSERVER}
+                            component={InternalError}
                         />
                         <Route
                             path={R.NOTFOUND}
