@@ -5,7 +5,6 @@ import { Button, Form, Grid, Header, Image, Message, Segment, Label } from "sema
 import { Link } from "react-router-dom";
 import { formatRoute } from "react-router-named-routes";
 import { HOME, LOGIN } from "../../Routes";
-import { toast } from "react-toastify";
 
 const logo = require("../../resources/logocodeandchill.png");
 
@@ -30,7 +29,9 @@ export default class UserSignUp extends React.Component<any, any> {
             "message": false,
             "usernameSize": false,
             "usernameChar": false,
+            "usernameUsed": false,
             "emailSize": false,
+            "emailUsed": false,
             "firstnameSize": false,
             "lastnameSize": false,
             "passwordSize": false,
@@ -60,6 +61,8 @@ export default class UserSignUp extends React.Component<any, any> {
         newState.user[e.target.name] = e.target.value;
         this.setState(newState);
         
+        this.setState({usernameUsed: false});
+
         if (this.checkSize(5, 100, e.target.value.length)) {
             this.setState({usernameSize: false});
         } else {
@@ -76,6 +79,8 @@ export default class UserSignUp extends React.Component<any, any> {
         var newState = Object.assign({}, this.state);
         newState.user[e.target.name] = e.target.value;
         this.setState(newState);
+
+        this.setState({emailUsed: false});
 
         if (this.checkSize(4, 100, e.target.value.length)) {
             this.setState({emailSize: false});
@@ -183,7 +188,11 @@ export default class UserSignUp extends React.Component<any, any> {
                                         : null
                                     }
                                     <Form.Input
-                                        error={(this.state.usernameSize || this.state.usernameChar)}
+                                        error={
+                                            (this.state.usernameSize
+                                            || this.state.usernameChar
+                                            || this.state.usernameUsed)
+                                        }
                                         required={true}
                                         max={100}
                                         fluid={true}
@@ -194,11 +203,11 @@ export default class UserSignUp extends React.Component<any, any> {
                                         onChange={this.handleChangeUN}
                                     />
                                     {
-                                        (this.state.usernameSize || this.state.usernameChar) ?
-                                        <Label basic={true} color="red" pointing={true}>
+                                        (this.state.usernameSize || this.state.usernameChar || this.state.usernameUsed)
+                                        ? <Label basic={true} color="red" pointing={true}>
                                             {
                                                 this.state.usernameSize
-                                                ? "Username must be 5 characters or more\n"
+                                                ? "Username must be 5 characters or more"
                                                 : null
                                             }
                                             {
@@ -211,12 +220,17 @@ export default class UserSignUp extends React.Component<any, any> {
                                                 ? "Username must be composed of A-Z, a-z, 0-9 or '_'"
                                                 : null
                                             }
+                                            {
+                                                this.state.usernameUsed
+                                                ? "Username is already in use"
+                                                : null
+                                            }
                                         </Label>
                                         :
                                         null
                                     }
                                     <Form.Input
-                                        error={this.state.emailSize}
+                                        error={this.state.emailSize || this.state.emailUsed}
                                         required={true}
                                         max={100}
                                         fluid={true}
@@ -231,6 +245,13 @@ export default class UserSignUp extends React.Component<any, any> {
                                         this.state.emailSize ?
                                         <Label basic={true} color="red" pointing={true}>
                                             Email is invalid
+                                        </Label>
+                                        : null
+                                    }
+                                    {
+                                        this.state.emailUsed ?
+                                        <Label basic={true} color="red" pointing={true}>
+                                            Email is already in use
                                         </Label>
                                         : null
                                     }
@@ -366,7 +387,12 @@ export default class UserSignUp extends React.Component<any, any> {
             this.setState({errCheck: false});
             this.Auth.createAccount(user).then((res) => {
                 if (res.status === 400) {
-                    toast(res.content.message, res.content.toast);
+                    if (res.content.email !== "success") {
+                        this.setState({emailUsed: true});
+                    }
+                    if (res.content.username !== "success") {
+                        this.setState({usernameUsed: true});
+                    }
                 } else {
                     this.setState(
                         {
