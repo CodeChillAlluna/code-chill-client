@@ -123,11 +123,11 @@ class DashDocker extends React.Component<any, any> {
     deleteDocker() {
         // ok : 204
         this.props.Auth.deleteDocker(this.props.docker.id).then((res) => {
+            toast(res.content.message, res.content.toast);
+            this.closeDeleteModal();
             if (res.status === 204) {
                 clearInterval(this.interval);
-                this.closeDeleteModal();
                 this.props.onDockerDelete();
-                toast(res.content.message, res.content.toast);
             }
         });
     }
