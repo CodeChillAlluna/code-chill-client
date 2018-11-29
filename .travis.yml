@@ -12,7 +12,7 @@ before_deploy:
   - ./install/deploy.sh 1
 deploy:
   provider: script
-  script: ./install/deploy.sh 1
+  script: ./install/deploy.sh 3
   on:
     all_branches: true
 
