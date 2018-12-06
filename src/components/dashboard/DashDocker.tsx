@@ -44,10 +44,6 @@ class DashDocker extends React.Component<any, any> {
         this.handleChange = this.handleChange.bind(this);
 
         this.statsDocker();
-
-        if (this.state.dockerRunning || this.state.dockerPaused) {
-            this.interval = setInterval(this.statsDocker, 5000);
-        }
     }
     
     componentWillUnmount() {
@@ -145,12 +141,14 @@ class DashDocker extends React.Component<any, any> {
             let dockerExited = false;
 
             updatedDockerMemoryArray.push({ 
-                "RAM": this.state.dockerMemoryUsage,
-                "max": this.state.dockerMemoryLimit 
+                // "RAM": this.state.dockerMemoryUsage,
+                // "max": this.state.dockerMemoryLimit 
+                "RAM": docker.memoryUsage as number,
+                "max": docker.memoryLimit as number 
             });
 
             updatedDockerCpuArray.push({
-                "CPU": this.state.dockerCpuPercent,
+                "CPU": docker.cpuPercent as number,
                 "max": 100 
             });
 
@@ -196,6 +194,11 @@ class DashDocker extends React.Component<any, any> {
                 dockerExited: dockerExited,
             });
         });
+
+        if (!this.interval) {
+            this.interval = setInterval(this.statsDocker, 5000);
+        }
+
         if (this.state.dockerCreated || this.state.dockerExited) {
             clearInterval(this.interval);
         }
