@@ -140,9 +140,7 @@ class DashDocker extends React.Component<any, any> {
             let dockerPaused = false;
             let dockerExited = false;
 
-            updatedDockerMemoryArray.push({ 
-                // "RAM": this.state.dockerMemoryUsage,
-                // "max": this.state.dockerMemoryLimit 
+            updatedDockerMemoryArray.push({
                 "RAM": docker.memoryUsage as number,
                 "max": docker.memoryLimit as number 
             });
