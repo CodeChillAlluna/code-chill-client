@@ -2,6 +2,7 @@ import * as decode from "jwt-decode";
 import * as request from "./constants/request.config";
 import Response from "./Response";
 import * as ToastConfig from "./constants/toast.config";
+import Axios from "axios";
 
 export default class AuthService {
     // Initializing important variables
@@ -252,6 +253,44 @@ export default class AuthService {
         }).then((res) => {
             return Promise.resolve(res);
         });
+    }
+
+    exportContainer(id: number) {
+        const headers = {
+            "Content-Type": "application/json",
+            "Accept": "application/octet-stream"
+        };
+        if (this.loggedIn()) {
+            headers["Authorization"] = "Bearer " + this.getToken();
+        }
+        Axios({
+            method: "get",
+            url: `${this.domain}/containers/${id}/export`, 
+            responseType: "blob",
+            headers: {
+                Accept: "application/octet-stream",
+            },
+        })
+        .then((response) => {
+            let fileName: string = `container_${id}.tar`;
+            const contentDisposition = response["headers"]["content-disposition"];
+            console.log(contentDisposition);
+            if (contentDisposition) {
+                const fileNameMatch = contentDisposition.match(/filename="(.+)"/);
+                if (fileNameMatch.length === 2) {
+                    fileName = fileNameMatch[1];
+                }
+            }
+            const url = window.URL.createObjectURL(new Blob([response.data], {type: "application/octet-stream"}));
+            const link = document.createElement("a");
+            link.href = url;
+            link.setAttribute("download", fileName);
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+            window.URL.revokeObjectURL(url);
+        })
+        .catch((error) => console.log(error));
     }
 
     parseResponse(res: any) {
