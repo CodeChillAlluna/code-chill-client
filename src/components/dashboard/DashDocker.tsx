@@ -477,8 +477,8 @@ class DashDocker extends React.Component<any, any> {
                                     </button>
                                 </List.Item>
                                 <List.Item>
-                                    <List.Header>Export Image</List.Header>
-                                     <button
+                                    <List.Header>Export Image</List.Header> 
+                                    <button
                                         onClick={this.exportImage}
                                     >
                                         Export image
