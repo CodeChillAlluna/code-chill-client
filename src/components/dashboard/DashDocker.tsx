@@ -247,9 +247,9 @@ class DashDocker extends React.Component<any, any> {
         }
     }
 
-    exportContainer = () => {
-        this.props.Auth.exportContainer(this.props.docker.id);
-    }
+    exportContainer = () => this.props.Auth.exportContainer(this.props.docker.id);
+
+    exportImage = () => this.props.Auth.exportImage();
 
     render() {
         return (
@@ -469,13 +469,7 @@ class DashDocker extends React.Component<any, any> {
                                     &nbsp;({(this.state.dockerMemoryPercentage).toFixed(2)} %)
                                 </List.Item>
                                 <List.Item>
-                                    <List.Header>RamUsed</List.Header>
-                                    <a 
-                                        href="http://localhost:8080/containers/1/export"
-                                        download={true}
-                                    >
-                                        Export container
-                                    </a>
+                                    <List.Header>Export container</List.Header>
                                     <button
                                         onClick={this.exportContainer}
                                     >
@@ -483,13 +477,12 @@ class DashDocker extends React.Component<any, any> {
                                     </button>
                                 </List.Item>
                                 <List.Item>
-                                    <List.Header>RamUsed</List.Header>
-                                    <a 
-                                        href="http://localhost:8080/images/codechillaluna/code-chill-ide/get"
-                                        download={true}
+                                    <List.Header>Export Image</List.Header>
+                                     <button
+                                        onClick={this.exportImage}
                                     >
                                         Export image
-                                    </a>
+                                    </button>
                                 </List.Item>
                                 <List.Item>
                                     <Grid>
