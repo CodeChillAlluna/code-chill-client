@@ -76,3 +76,30 @@ export const INFO = {
     draggable: true, 
     draggablePercent: 80,
 };
+
+export const LOADING_EXPORT = {
+    type: toast.TYPE.INFO, 
+    position: toast.POSITION.BOTTOM_RIGHT,
+    hideProgressBar: true,
+    className: "loadingExportToast",
+    bodyClassName: "loadingExportToastBody",
+    closeButton: false,
+    autoClose: false as false,
+    draggable: false,
+    closeOnClick: false,
+};
+
+export const EXPORT_DONE = {
+    type: toast.TYPE.SUCCESS, 
+    position: toast.POSITION.BOTTOM_RIGHT,
+    autoClose: 2500,
+    hideProgressBar: true,
+    pauseOnHover: true,
+    pauseOnFocusLoss: true,
+    closeOnClick: true,
+    className: "doneToast",
+    bodyClassName: "doneToastBody",
+    progressClassName: "doneToastProgress",
+    draggable: true,
+    draggablePercent: 80,
+};

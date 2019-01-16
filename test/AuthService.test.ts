@@ -373,9 +373,12 @@ test("testing statsDocker", () => {
 
 test("testing exportContainer", () => {
   let auth = new AuthService();
-  fetchMock.once("http://toto/containers/0/export", { status: 204, body: { } }, { method: "GET" });
+  fetchMock.once(
+    "http://toto/containers/0/export", 
+    { status: 204, body: { } }, 
+    { method: "GET" }
+  );
   auth.exportContainer(0);
-  auth.exportContainer(-1);
 });
 
 test("testing exportImage", () => {

@@ -4,6 +4,9 @@ import Response from "./Response";
 import * as ToastConfig from "./constants/toast.config";
 import Axios from "axios";
 import { toast } from "react-toastify";
+import { createElement } from "react";
+import ToastExport from "./components/toast/ToastExport";
+import { Icon } from "semantic-ui-react";
 
 export default class AuthService {
     // Initializing important variables
@@ -257,7 +260,10 @@ export default class AuthService {
     }
 
     exportContainer(id: number) {
-        let toastId = toast("Compressing your environment.", { autoClose: false});
+        let toastId = toast(
+            createElement(ToastExport, {loading: true, message: " Compressing environment..."}, null), 
+            ToastConfig.LOADING_EXPORT  
+        );
         const headers = {
             "Content-Type": "application/json",
             "Accept": "application/octet-stream"
@@ -272,7 +278,11 @@ export default class AuthService {
             headers: headers
         })
         .then((response) => {
-            toast.update(toastId, { type: toast.TYPE.SUCCESS, autoClose: 5000, render: "Done." });
+            let icon = createElement(Icon, {}, { name: "check"});
+            ToastConfig.EXPORT_DONE["render"] = createElement(
+                ToastExport, {loading: false, icon: icon, message: " Done"}, null
+            ); 
+            toast.update(toastId, ToastConfig.EXPORT_DONE);
             let fileName: string = `container_${id}.tar`;
             const contentDisposition = response["headers"]["content-disposition"];
             if (contentDisposition) {
@@ -297,7 +307,10 @@ export default class AuthService {
     }
 
     exportImage() {
-        let toastId = toast("Creating archive.", { autoClose: false});
+        let toastId = toast(
+            createElement(ToastExport, {loading: true, message: " Compressing image..."}, null), 
+            ToastConfig.LOADING_EXPORT  
+        );
         const headers = {
             "Content-Type": "application/json",
             "Accept": "application/octet-stream"
@@ -330,7 +343,8 @@ export default class AuthService {
             link.remove();
             window.URL.revokeObjectURL(url);
         })
-        .catch(() => {
+        .catch((error) => {
+            console.log(error);
             toast.update(toastId, { type: toast.TYPE.SUCCESS, autoClose: 5000, render: "It failed, sorry :(" });
         });
     }  
