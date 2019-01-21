@@ -6,7 +6,6 @@ import Axios from "axios";
 import { toast } from "react-toastify";
 import { createElement } from "react";
 import ToastExport from "./components/toast/ToastExport";
-import { Icon } from "semantic-ui-react";
 
 export default class AuthService {
     // Initializing important variables
@@ -278,11 +277,7 @@ export default class AuthService {
             headers: headers
         })
         .then((response) => {
-            let icon = createElement(Icon, {}, { name: "check"});
-            ToastConfig.EXPORT_DONE["render"] = createElement(
-                ToastExport, {loading: false, icon: icon, message: " Done"}, null
-            ); 
-            toast.update(toastId, ToastConfig.EXPORT_DONE);
+            toast.update(toastId, { type: toast.TYPE.SUCCESS, autoClose: 5000, render: "Done." });
             let fileName: string = `container_${id}.tar`;
             const contentDisposition = response["headers"]["content-disposition"];
             if (contentDisposition) {
@@ -325,6 +320,7 @@ export default class AuthService {
             headers: headers
         })
         .then((response) => {
+            console.log(response);
             toast.update(toastId, { type: toast.TYPE.SUCCESS, autoClose: 5000, render: "Done." });
             let fileName: string = `code-chill-ide.tar`;
             const contentDisposition = response["headers"]["content-disposition"];
