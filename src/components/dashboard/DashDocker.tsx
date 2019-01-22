@@ -247,6 +247,10 @@ class DashDocker extends React.Component<any, any> {
         }
     }
 
+    exportContainer = () => this.props.Auth.exportContainer(this.props.docker.id);
+
+    exportImage = () => this.props.Auth.exportImage();
+
     render() {
         return (
             <div>
@@ -463,6 +467,22 @@ class DashDocker extends React.Component<any, any> {
                                     &nbsp;/&nbsp;
                                     {(this.state.dockerMemoryLimit).toFixed(2)}&nbsp;Mo
                                     &nbsp;({(this.state.dockerMemoryPercentage).toFixed(2)} %)
+                                </List.Item>
+                                <List.Item>
+                                    <List.Header>Export container</List.Header>
+                                    <button
+                                        onClick={this.exportContainer}
+                                    >
+                                        Export Container
+                                    </button>
+                                </List.Item>
+                                <List.Item>
+                                    <List.Header>Export Image</List.Header> 
+                                    <button
+                                        onClick={this.exportImage}
+                                    >
+                                        Export image
+                                    </button>
                                 </List.Item>
                                 <List.Item>
                                     <Grid>
