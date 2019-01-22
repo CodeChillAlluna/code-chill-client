@@ -2,6 +2,10 @@ import * as decode from "jwt-decode";
 import * as request from "./constants/request.config";
 import Response from "./Response";
 import * as ToastConfig from "./constants/toast.config";
+import Axios from "axios";
+import { toast } from "react-toastify";
+import { createElement } from "react";
+import ToastExport from "./components/toast/ToastExport";
 
 export default class AuthService {
     // Initializing important variables
@@ -253,6 +257,93 @@ export default class AuthService {
             return Promise.resolve(res);
         });
     }
+
+    exportContainer(id: number) {
+        let toastId = toast(
+            createElement(ToastExport, {loading: true, message: " Compressing environment..."}, null), 
+            ToastConfig.LOADING_EXPORT  
+        );
+        const headers = {
+            "Content-Type": "application/json",
+            "Accept": "application/octet-stream"
+        };
+        if (this.loggedIn()) {
+            headers["Authorization"] = "Bearer " + this.getToken();
+        }
+        Axios({
+            method: "get",
+            url: `${this.domain}/containers/${id}/export`, 
+            responseType: "blob",
+            headers: headers
+        })
+        .then((response) => {
+            toast.update(toastId, { type: toast.TYPE.SUCCESS, autoClose: 5000, render: "Done." });
+            let fileName: string = `container_${id}.tar`;
+            const contentDisposition = response["headers"]["content-disposition"];
+            if (contentDisposition) {
+                const fileNameMatch = contentDisposition.match(/filename="(.+)"/);
+                if (fileNameMatch.length === 2) {
+                    fileName = fileNameMatch[1];
+                }
+            }
+            const url = window.URL.createObjectURL(new Blob([response.data], {type: "application/octet-stream"}));
+            const link = document.createElement("a");
+            link.href = url;
+            link.setAttribute("download", fileName);
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+            window.URL.revokeObjectURL(url);
+        })
+        .catch((error) => {
+            console.log(error);
+            toast.update(toastId, { type: toast.TYPE.SUCCESS, autoClose: 5000, render: "It failed, sorry :(" });
+        });
+    }
+
+    exportImage() {
+        let toastId = toast(
+            createElement(ToastExport, {loading: true, message: " Compressing image..."}, null), 
+            ToastConfig.LOADING_EXPORT  
+        );
+        const headers = {
+            "Content-Type": "application/json",
+            "Accept": "application/octet-stream"
+        };
+        if (this.loggedIn()) {
+            headers["Authorization"] = "Bearer " + this.getToken();
+        }
+        Axios({
+            method: "get",
+            url: `${this.domain}/images/codechillaluna/code-chill-ide/get`, 
+            responseType: "blob",
+            headers: headers
+        })
+        .then((response) => {
+            console.log(response);
+            toast.update(toastId, { type: toast.TYPE.SUCCESS, autoClose: 5000, render: "Done." });
+            let fileName: string = `code-chill-ide.tar`;
+            const contentDisposition = response["headers"]["content-disposition"];
+            if (contentDisposition) {
+                const fileNameMatch = contentDisposition.match(/filename="(.+)"/);
+                if (fileNameMatch.length === 2) {
+                    fileName = fileNameMatch[1];
+                }
+            }
+            const url = window.URL.createObjectURL(new Blob([response.data], {type: "application/octet-stream"}));
+            const link = document.createElement("a");
+            link.href = url;
+            link.setAttribute("download", fileName);
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+            window.URL.revokeObjectURL(url);
+        })
+        .catch((error) => {
+            console.log(error);
+            toast.update(toastId, { type: toast.TYPE.SUCCESS, autoClose: 5000, render: "It failed, sorry :(" });
+        });
+    }  
 
     parseResponse(res: any) {
         let response = new Response();
