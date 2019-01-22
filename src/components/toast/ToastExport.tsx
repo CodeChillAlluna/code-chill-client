@@ -9,7 +9,7 @@ class ToastExport extends React.Component<any, any> {
     render() {
         return (
             <div>
-                {this.props.loading ? <div><Loader active inline /> {this.props.message}</div> : null}
+                {this.props.loading ? <div><Loader active={true} inline={true} /> {this.props.message}</div> : null}
                 {this.props.icon ? <div>{this.props.icon} {this.props.message}</div> : null}
             </div>
         );
