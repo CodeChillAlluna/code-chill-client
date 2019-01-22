@@ -433,7 +433,7 @@ class DashDocker extends React.Component<any, any> {
                             </Container>
                         </Grid.Column>
                     </Grid.Row>
-                    <Grid.Row>
+                    <Grid.Row columns={3}>
                         <Grid.Column>
                             <List>
                                 <List.Item>
@@ -448,6 +448,10 @@ class DashDocker extends React.Component<any, any> {
                                     <List.Header>Creation date</List.Header>
                                     {this.state.dockerCreationDate}
                                 </List.Item>
+                            </List>
+                        </Grid.Column>
+                        <Grid.Column>
+                            <List>
                                 <List.Item>
                                     <List.Header>Status</List.Header>
                                     {this.state.dockerStatus}
@@ -464,29 +468,25 @@ class DashDocker extends React.Component<any, any> {
                                     {(this.state.dockerMemoryLimit).toFixed(2)}&nbsp;Mo
                                     &nbsp;({(this.state.dockerMemoryPercentage).toFixed(2)} %)
                                 </List.Item>
-                                <List.Item>
-                                    <Grid>
-                                        <Grid.Row columns={2}>
-                                            <Grid.Column>
-                                                <DashGraph
-                                                    datavalues={this.state.dockerCpuArray}
-                                                    datamax={100}
-                                                    dataname={[ "CPU", "max" ]}
-                                                    graphcolor="accent"
-                                                />
-                                            </Grid.Column>
-                                            <Grid.Column>
-                                                <DashGraph
-                                                    datavalues={this.state.dockerMemoryArray}
-                                                    datamax={this.state.dockerMemoryLimit}
-                                                    dataname={[ "RAM", "max" ]}
-                                                    graphcolor="paired"
-                                                />
-                                            </Grid.Column>
-                                        </Grid.Row>
-                                    </Grid>
-                                </List.Item>
                             </List>
+                        </Grid.Column>
+                    </Grid.Row>
+                    <Grid.Row columns={2}>
+                        <Grid.Column>
+                            <DashGraph
+                                datavalues={this.state.dockerCpuArray}
+                                datamax={100}
+                                dataname={[ "CPU", "max" ]}
+                                graphcolor="accent"
+                            />
+                        </Grid.Column>
+                        <Grid.Column>
+                            <DashGraph
+                                datavalues={this.state.dockerMemoryArray}
+                                datamax={this.state.dockerMemoryLimit}
+                                dataname={[ "RAM", "max" ]}
+                                graphcolor="paired"
+                            />
                         </Grid.Column>
                     </Grid.Row>
                 </Grid>

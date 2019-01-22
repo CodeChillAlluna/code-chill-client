@@ -1,7 +1,7 @@
 import * as React from "react";
 import NavBar from "../NavBar";
 import AuthService from "../../AuthService";
-import { Button, Form, Grid, Header, Image, Message, Segment, Label } from "semantic-ui-react";
+import { Button, Form, Grid, Header, Image, Message, Segment, Label, Popup } from "semantic-ui-react";
 import { Link } from "react-router-dom";
 import { formatRoute } from "react-router-named-routes";
 import { HOME, LOGIN } from "../../Routes";
@@ -161,6 +161,56 @@ export default class UserSignUp extends React.Component<any, any> {
                 </NavBar>
             );
         } else {
+            var usernameErrorMsg: String = "";
+            var emailErrorMsg: String = "";
+            var firstnameErrorMsg: String = "";
+            var lastnameErrorMsg: String = "";
+            var passwordErrorMsg: String = "";
+            if (this.state.usernameSize || this.state.usernameChar || this.state.usernameUsed) {
+                if (this.state.usernameSize) {
+                    usernameErrorMsg += "Username must be 5 characters or more";
+                }
+                if (this.state.usernameSize && this.state.usernameChar) {
+                    usernameErrorMsg += " and ";
+                }
+                if (!this.state.usernameSize && this.state.usernameChar) {
+                    usernameErrorMsg += "Username ";
+                }
+                if (this.state.usernameChar) {
+                    usernameErrorMsg += "must be composed of A-Z, a-z, 0-9 or '_'";
+                }
+                if (this.state.usernameUsed) {
+                    usernameErrorMsg += "Username is already in use";
+                }
+            }
+            if (this.state.emailSize || this.state.emailUsed) {
+                if (this.state.emailSize) {
+                    emailErrorMsg += "Email is invalid";
+                }
+                if (this.state.emailUsed) {
+                    emailErrorMsg += "Email is already in use";
+                }
+            }
+            if (this.state.firstnameSize) {
+                firstnameErrorMsg += "Firstname must be 3 characters or more";
+            }
+            if (this.state.lastnameSize) {
+                lastnameErrorMsg += "Lastname must be 3 characters or more";
+            }
+            if (this.state.passwordSize || this.state.passwordChar) {
+                if (this.state.passwordSize) {
+                    passwordErrorMsg += "Password must be 4 characters or more";
+                }
+                if (this.state.passwordSize && this.state.passwordChar) {
+                    passwordErrorMsg += " and musn't have ";
+                }
+                if (!this.state.passwordSize && this.state.passwordChar) {
+                    passwordErrorMsg += "No ";
+                }
+                if (this.state.passwordChar) {
+                    passwordErrorMsg += "whitespaces, ', \", / or \\";
+                }
+            }
             return(
                 <NavBar history={this.props.history} >
                     <Grid
@@ -187,143 +237,149 @@ export default class UserSignUp extends React.Component<any, any> {
                                         </Label>
                                         : null
                                     }
-                                    <Form.Input
-                                        error={
-                                            (this.state.usernameSize
+                                    <Popup
+                                        trigger={
+                                            <Form.Input
+                                                error={
+                                                    (this.state.usernameSize
+                                                    || this.state.usernameChar
+                                                    || this.state.usernameUsed)
+                                                }
+                                                required={true}
+                                                max={100}
+                                                fluid={true}
+                                                icon="user"
+                                                iconPosition="left"
+                                                placeholder="Username"
+                                                name="username"
+                                                onChange={this.handleChangeUN}
+                                            />
+                                        }
+                                        content={usernameErrorMsg}
+                                        on="click"
+                                        open={
+                                            this.state.usernameSize
                                             || this.state.usernameChar
-                                            || this.state.usernameUsed)
+                                            || this.state.usernameUsed
                                         }
-                                        required={true}
-                                        max={100}
-                                        fluid={true}
-                                        icon="user"
-                                        iconPosition="left"
-                                        placeholder="Username"
-                                        name="username"
-                                        onChange={this.handleChangeUN}
+                                        position="top center"
+                                        wide={true}
+                                        inverted={true}
+                                        style={{
+                                            opacity: 0.8,
+                                            backgroundColor: "red",
+                                        }}
                                     />
-                                    {
-                                        (this.state.usernameSize || this.state.usernameChar || this.state.usernameUsed)
-                                        ? <Label basic={true} color="red" pointing={true}>
-                                            {
-                                                this.state.usernameSize
-                                                ? "Username must be 5 characters or more"
-                                                : null
-                                            }
-                                            {
-                                                this.state.usernameSize && this.state.usernameChar
-                                                ? <br/>
-                                                : null
-                                            }
-                                            {
-                                                this.state.usernameChar
-                                                ? "Username must be composed of A-Z, a-z, 0-9 or '_'"
-                                                : null
-                                            }
-                                            {
-                                                this.state.usernameUsed
-                                                ? "Username is already in use"
-                                                : null
-                                            }
-                                        </Label>
-                                        :
-                                        null
-                                    }
-                                    <Form.Input
-                                        error={this.state.emailSize || this.state.emailUsed}
-                                        required={true}
-                                        max={100}
-                                        fluid={true}
-                                        icon="envelope"
-                                        iconPosition="left"
-                                        placeholder="Email"
-                                        type="email"
-                                        name="email"
-                                        onChange={this.handleChangeM}
-                                    />
-                                    {
-                                        this.state.emailSize ?
-                                        <Label basic={true} color="red" pointing={true}>
-                                            Email is invalid
-                                        </Label>
-                                        : null
-                                    }
-                                    {
-                                        this.state.emailUsed ?
-                                        <Label basic={true} color="red" pointing={true}>
-                                            Email is already in use
-                                        </Label>
-                                        : null
-                                    }
-                                    <Form.Input
-                                        error={this.state.firstnameSize}
-                                        required={true}
-                                        max={100}
-                                        fluid={true}
-                                        icon="user"
-                                        iconPosition="left"
-                                        placeholder="First name"
-                                        name="firstname"
-                                        onChange={this.handleChangeFN}
-                                    />
-                                    {
-                                        this.state.firstnameSize ?
-                                        <Label basic={true} color="red" pointing={true}>
-                                            Firstname must be 3 characters or more
-                                        </Label>
-                                        : null
-                                    }
-                                    <Form.Input
-                                        error={this.state.lastnameSize}
-                                        required={true}
-                                        max={100}
-                                        fluid={true}
-                                        icon="user"
-                                        iconPosition="left"
-                                        placeholder="Last name"
-                                        name="lastname"
-                                        onChange={this.handleChangeLN}
-                                    />
-                                    {
-                                        this.state.lastnameSize ?
-                                        <Label basic={true} color="red" pointing={true}>
-                                            Lastname must be 3 characters or more
-                                        </Label>
-                                        : null
-                                    }
-                                    <Form.Input
-                                        error={this.state.passwordSize || this.state.passwordChar}
-                                        required={true}
-                                        max={100}
-                                        fluid={true}
-                                        icon="lock"
-                                        iconPosition="left"
-                                        placeholder="Password"
-                                        type="password"
-                                        name="password"
-                                        onChange={this.handleChangeP}
-                                    />
-                                    {
-                                        this.state.passwordSize || this.state.passwordChar ?
-                                        <Label basic={true} color="red" pointing={true}>
-                                        {
-                                            this.state.passwordSize
-                                            ? "Password must be 4 characters or more"
-                                            : null
+                                    <Popup
+                                        trigger={
+                                            <Form.Input
+                                                error={this.state.emailSize || this.state.emailUsed}
+                                                required={true}
+                                                max={100}
+                                                fluid={true}
+                                                icon="envelope"
+                                                iconPosition="left"
+                                                placeholder="Email"
+                                                type="email"
+                                                name="email"
+                                                onChange={this.handleChangeM}
+                                            />
                                         }
-                                        {
-                                            this.state.passwordSize && this.state.passwordChar
-                                            ? <br/>
-                                            : null
+                                        content={emailErrorMsg}
+                                        on="click"
+                                        open={
+                                            this.state.emailSize || this.state.emailUsed
                                         }
-                                        {
-                                            this.state.passwordChar
-                                            ? "No whitespace, ', \", / or \\ allowed"
-                                            : null
+                                        position="top center"
+                                        wide={true}
+                                        inverted={true}
+                                        style={{
+                                            opacity: 0.8,
+                                            backgroundColor: "red",
+                                        }}
+                                    />
+                                    <Popup
+                                        trigger={
+                                            <Form.Input
+                                                error={this.state.firstnameSize}
+                                                required={true}
+                                                max={100}
+                                                fluid={true}
+                                                icon="user"
+                                                iconPosition="left"
+                                                placeholder="First name"
+                                                name="firstname"
+                                                onChange={this.handleChangeFN}
+                                            />
                                         }
-                                        </Label>
-                                        : null
-                                    }
+                                        content={firstnameErrorMsg}
+                                        on="click"
+                                        open={
+                                            this.state.firstnameSize
+                                        }
+                                        position="top center"
+                                        wide={true}
+                                        inverted={true}
+                                        style={{
+                                            opacity: 0.8,
+                                            backgroundColor: "red",
+                                        }}
+                                    />
+                                    <Popup
+                                        trigger={
+                                            <Form.Input
+                                                error={this.state.lastnameSize}
+                                                required={true}
+                                                max={100}
+                                                fluid={true}
+                                                icon="user"
+                                                iconPosition="left"
+                                                placeholder="Last name"
+                                                name="lastname"
+                                                onChange={this.handleChangeLN}
+                                            />
+                                        }
+                                        content={lastnameErrorMsg}
+                                        on="click"
+                                        open={
+                                            this.state.lastnameSize
+                                        }
+                                        position="top center"
+                                        wide={true}
+                                        inverted={true}
+                                        style={{
+                                            opacity: 0.8,
+                                            backgroundColor: "red",
+                                        }}
+                                    />
+                                    <Popup
+                                        trigger={
+                                            <Form.Input
+                                                error={this.state.passwordSize || this.state.passwordChar}
+                                                required={true}
+                                                max={100}
+                                                fluid={true}
+                                                icon="lock"
+                                                iconPosition="left"
+                                                placeholder="Password"
+                                                type="password"
+                                                name="password"
+                                                onChange={this.handleChangeP}
+                                            />
+                                        }
+                                        content={passwordErrorMsg}
+                                        on="click"
+                                        open={
+                                            this.state.passwordSize || this.state.passwordChar
+                                        }
+                                        position="top center"
+                                        wide={true}
+                                        inverted={true}
+                                        style={{
+                                            opacity: 0.8,
+                                            backgroundColor: "red",
+                                        }}
+                                    />
                                     <Form.Input
                                         error={this.state.passwordcCompare}
                                         required={true}
