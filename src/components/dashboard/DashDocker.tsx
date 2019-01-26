@@ -477,20 +477,18 @@ class DashDocker extends React.Component<any, any> {
                         <Grid.Column>
                             <List>
                                 <List.Item>
-                                    <List.Header>Export container</List.Header>
-                                    <button
-                                        onClick={this.exportContainer}
-                                    >
-                                        Export Container
-                                    </button>
-                                </List.Item>
-                                <List.Item>
-                                    <List.Header>Export Image</List.Header> 
-                                    <button
-                                        onClick={this.exportImage}
-                                    >
-                                        Export image
-                                    </button>
+                                    <List.Header>Export</List.Header>
+                                    <Button.Group vertical labeled icon>
+                                        <Button icon labelPosition="left" onClick={this.exportContainer} size="small">
+                                            <Icon name="download" />
+                                            Container
+                                        </Button>
+                                        <Button.Or />
+                                        <Button icon labelPosition="right" onClick={this.exportImage} size="small">
+                                            <Icon name="download" />
+                                            Image
+                                        </Button>
+                                    </Button.Group>
                                 </List.Item>
                             </List>
                         </Grid.Column>
