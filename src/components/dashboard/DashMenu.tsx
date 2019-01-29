@@ -10,7 +10,7 @@ import {
     Modal, 
     Button, 
     Input, 
-    Popup, 
+    Message, 
     Form, 
     Radio 
 } from "semantic-ui-react";
@@ -122,23 +122,24 @@ class DashMenu extends React.Component<any, any> {
                                     <Header icon="plus square outline" content="Add environment?" />
                                     <Modal.Content>
                                         <Form>
-                                            <Form.Group>
-                                                <Popup
-                                                    trigger={
-                                                        <Input
-                                                            required={true}
-                                                            name="addDockerName"
-                                                            placeholder="New Environment name"
-                                                            onChange={this.handleChange}
-                                                        />
-                                                    }
-                                                    header="Accepted characters"
-                                                    content="A-Z, a-z, '_'"
-                                                    on="focus"
-                                                />
-                                            </Form.Group>       
-                                            <Form.Group>
-                                                <p>Privacy</p>
+                                            <Form.Group grouped={true}>
+                                                <label>Name</label>
+                                                <Form.Field>
+                                                    <Input
+                                                        required={true}
+                                                        name="addDockerName"
+                                                        placeholder="New Environment name"
+                                                        onChange={this.handleChange}
+                                                        width={1}
+                                                    />
+                                                    <Message info={true}>
+                                                        <Message.Header>Accepted characters</Message.Header>
+                                                        <p>A-Z, a-z, "_"</p>
+                                                    </Message>
+                                                </Form.Field>
+                                            </Form.Group>
+                                            <Form.Group grouped={true}>
+                                                <label>Privacy</label>
                                                 <Form.Field>
                                                     <Radio
                                                         label="Private"
@@ -161,15 +162,12 @@ class DashMenu extends React.Component<any, any> {
                                         </Form>
                                     </Modal.Content>
                                     <Modal.Actions>
-                                            <p>
-                                            Would you like to add this new environment?
                                             <Button color="red" inverted={true} onClick={this.closeAddModal}>
-                                                <Icon name="remove" /> Close
+                                                <Icon name="remove" /> Cancel
                                             </Button>
                                             <Button color="green" inverted={true} onClick={this.addDocker}>
-                                                <Icon name="checkmark"/> Yes
+                                                <Icon name="checkmark"/> Add
                                             </Button>
-                                        </p>
                                     </Modal.Actions>
                                 </Modal>
                             </h2>
