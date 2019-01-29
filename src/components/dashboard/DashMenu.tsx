@@ -1,6 +1,19 @@
 import * as React from "react";
 import AuthService from "../../AuthService";
-import { Grid, Header, Container, Icon, Tab, Divider, Modal, Button, Input } from "semantic-ui-react";
+import { 
+    Grid, 
+    Header, 
+    Container, 
+    Icon, 
+    Tab, 
+    Divider, 
+    Modal, 
+    Button, 
+    Input, 
+    Popup, 
+    Form, 
+    Radio 
+} from "semantic-ui-react";
 import withAuth from "../withAuth";
 import DashDocker from "./DashDocker";
 import { toast } from "react-toastify";
@@ -20,6 +33,7 @@ class DashMenu extends React.Component<any, any> {
             "activeIndex": 0,
             "modalAddValidation": false,
             "addDockerName": "",
+            "radioPrivacy": "private"
         };
         this.Auth = new AuthService();
         this.addDocker = this.addDocker.bind(this);
@@ -33,6 +47,7 @@ class DashMenu extends React.Component<any, any> {
         } else if (/\W/.test(this.state.addDockerName)) {
             toast("Only A-Z, a-z, 0-9 and '_' are accepted.", ToastConfig.WARNING);
         } else {
+            // this.state.radioPrivacy
             this.Auth.createDocker(this.state.addDockerName).then((res) => {
                 toast(res.content.message, res.content.toast);
                 delete res.content.message;
@@ -55,6 +70,10 @@ class DashMenu extends React.Component<any, any> {
 
     handleChange(e: any) {
         this.setState({addDockerName: e.target.value});
+    }
+
+    handleChangeRadio = (e: any, radio: any) => {
+        this.setState({ radioPrivacy: radio.value });
     }
 
     render() {
@@ -96,34 +115,61 @@ class DashMenu extends React.Component<any, any> {
                                     style={{ cursor: "pointer" }}
                                 />
                                 <Modal
-                                    basic={true} 
                                     size="small"
                                     open={this.state.modalAddValidation}
                                     onClose={this.closeAddModal}
                                 >
                                     <Header icon="plus square outline" content="Add environment?" />
                                     <Modal.Content>
-                                        <p>
-                                        Accepted characters: A-Z, a-z, 0-9 and '_'.
-                                        </p>
-                                        <Input
-                                            required={true}
-                                            name="addDockerName"
-                                            placeholder="New Environment name"
-                                            onChange={this.handleChange}
-                                        />
-                                        <br/>
-                                        <p>
-                                        Would you like to add this new environment?
-                                        </p>
+                                        <Form>
+                                            <Form.Group>
+                                                <Popup
+                                                    trigger={
+                                                        <Input
+                                                            required={true}
+                                                            name="addDockerName"
+                                                            placeholder="New Environment name"
+                                                            onChange={this.handleChange}
+                                                        />
+                                                    }
+                                                    header="Accepted characters"
+                                                    content="A-Z, a-z, '_'"
+                                                    on="focus"
+                                                />
+                                            </Form.Group>       
+                                            <Form.Group>
+                                                <p>Privacy</p>
+                                                <Form.Field>
+                                                    <Radio
+                                                        label="Private"
+                                                        name="radioGroup"
+                                                        value="private"
+                                                        checked={this.state.radioPrivacy === "private"}
+                                                        onChange={this.handleChangeRadio}
+                                                    />
+                                                </Form.Field>
+                                                <Form.Field>
+                                                    <Radio
+                                                        label="Public"
+                                                        name="radioGroup"
+                                                        value="public"
+                                                        checked={this.state.radioPrivacy === "public"}
+                                                        onChange={this.handleChangeRadio}
+                                                    />
+                                                </Form.Field>
+                                            </Form.Group>
+                                        </Form>
                                     </Modal.Content>
                                     <Modal.Actions>
-                                        <Button color="red" inverted={true} onClick={this.closeAddModal}>
-                                            <Icon name="remove" /> Close
-                                        </Button>
-                                        <Button color="green" inverted={true} onClick={this.addDocker}>
-                                            <Icon name="checkmark"/> Yes
-                                        </Button>
+                                            <p>
+                                            Would you like to add this new environment?
+                                            <Button color="red" inverted={true} onClick={this.closeAddModal}>
+                                                <Icon name="remove" /> Close
+                                            </Button>
+                                            <Button color="green" inverted={true} onClick={this.addDocker}>
+                                                <Icon name="checkmark"/> Yes
+                                            </Button>
+                                        </p>
                                     </Modal.Actions>
                                 </Modal>
                             </h2>
