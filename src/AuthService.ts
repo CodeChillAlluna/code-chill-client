@@ -142,10 +142,10 @@ export default class AuthService {
         });
     }
 
-    createDocker(name: string) {
+    createDocker(name: string, idImage: number) {
         return this.fetch(`${this.domain}/containers/create`, {
             method: "POST",
-            body: JSON.stringify({ "name": name })
+            body: JSON.stringify({ "name": name, "imageId": idImage })
         }).then((res) => {
             if (res.status === 200) {
                 res["content"]["message"] = "Docker created.";
@@ -343,7 +343,23 @@ export default class AuthService {
             console.log(error);
             toast.update(toastId, { type: toast.TYPE.SUCCESS, autoClose: 5000, render: "It failed, sorry :(" });
         });
-    }  
+    }
+
+    getImages() {
+        return this.fetch(`${this.domain}/images`, {
+            method: "GET",
+        }).then((res) => {
+            return Promise.resolve(res);
+        });
+    }
+
+    getUserImages() {
+        return this.fetch(`${this.domain}/user/images`, {
+            method: "GET",
+        }).then((res) => {
+            return Promise.resolve(res);
+        });
+    }
 
     parseResponse(res: any) {
         let response = new Response();

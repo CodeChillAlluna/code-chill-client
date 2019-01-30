@@ -8,6 +8,7 @@ import UserConnection from "./user/UserConnection";
 import UserSignUp from "./user/UserSignUp";
 import UserProfile from "./user/UserProfile";
 import DashMenu from "./dashboard/DashMenu";
+import DashImageMenu from "./dashboard/DashImageMenu";
 import NotFound from "./NotFound";
 import InternalError from "./InternalError";
 import UserForgotPassword from "./user/UserForgotPassword";
@@ -69,6 +70,11 @@ export default class CodeChillRouter extends React.Component<any, any> {
                             exact={true}
                             path={R.DASHBOARD}
                             component={DashMenu}
+                        />
+                        <Route
+                            exact={true}
+                            path={R.DASHBOARDIMAGE}
+                            component={DashImageMenu}
                         />
                         <Route
                             exact={true}

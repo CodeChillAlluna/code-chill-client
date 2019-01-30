@@ -11,8 +11,8 @@ import {
     Button, 
     Input, 
     Message, 
-    Form, 
-    Radio 
+    Form,
+    Select
 } from "semantic-ui-react";
 import withAuth from "../withAuth";
 import DashDocker from "./DashDocker";
@@ -33,7 +33,9 @@ class DashMenu extends React.Component<any, any> {
             "activeIndex": 0,
             "modalAddValidation": false,
             "addDockerName": "",
-            "radioPrivacy": "private"
+            "radioPrivacy": "private",
+            "images": [],
+            "imageSelected": ""
         };
         this.Auth = new AuthService();
         this.addDocker = this.addDocker.bind(this);
@@ -47,8 +49,7 @@ class DashMenu extends React.Component<any, any> {
         } else if (/\W/.test(this.state.addDockerName)) {
             toast("Only A-Z, a-z, 0-9 and '_' are accepted.", ToastConfig.WARNING);
         } else {
-            // this.state.radioPrivacy
-            this.Auth.createDocker(this.state.addDockerName).then((res) => {
+            this.Auth.createDocker(this.state.addDockerName, this.state.imageSelected).then((res) => {
                 toast(res.content.message, res.content.toast);
                 delete res.content.message;
                 let updatedDockers = this.state.dockers;
@@ -65,7 +66,18 @@ class DashMenu extends React.Component<any, any> {
         });
     }
 
-    showAddModal = () => this.setState({ modalAddValidation: true });
+    showAddModal = () => {
+        this.Auth.getImages().then((res) => {
+            console.log(res);
+            let imgs = [];
+            for (let img of res.content.images) {
+                imgs.push({ "text": img.name, "value": img.id });
+            }
+            this.setState({ images: imgs });
+        });
+        this.setState({ modalAddValidation: true });
+    }
+
     closeAddModal = () => this.setState({ modalAddValidation: false });
 
     handleChange(e: any) {
@@ -74,6 +86,10 @@ class DashMenu extends React.Component<any, any> {
 
     handleChangeRadio = (e: any, radio: any) => {
         this.setState({ radioPrivacy: radio.value });
+    }
+
+    handleChangeSelect = (e: any, select: any) => {
+        this.setState({ imageSelected: select.value });
     }
 
     render() {
@@ -138,8 +154,9 @@ class DashMenu extends React.Component<any, any> {
                                                     </Message>
                                                 </Form.Field>
                                             </Form.Group>
+                                            {/*
                                             <Form.Group grouped={true}>
-                                                <label>Privacy</label>
+                                                <label>Image Privacy</label>
                                                 <Form.Field>
                                                     <Radio
                                                         label="Private"
@@ -158,6 +175,16 @@ class DashMenu extends React.Component<any, any> {
                                                         onChange={this.handleChangeRadio}
                                                     />
                                                 </Form.Field>
+                                            </Form.Group>
+                                            */}
+                                            <Form.Group grouped={true}>
+                                                <Select 
+                                                    placeholder="Choose your image" 
+                                                    options={this.state.images} 
+                                                    required={true}
+                                                    onChange={this.handleChangeSelect}
+                                                    value={this.state.imageSelected}
+                                                />
                                             </Form.Group>
                                         </Form>
                                     </Modal.Content>
