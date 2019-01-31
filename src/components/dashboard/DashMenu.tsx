@@ -154,29 +154,6 @@ class DashMenu extends React.Component<any, any> {
                                                     </Message>
                                                 </Form.Field>
                                             </Form.Group>
-                                            {/*
-                                            <Form.Group grouped={true}>
-                                                <label>Image Privacy</label>
-                                                <Form.Field>
-                                                    <Radio
-                                                        label="Private"
-                                                        name="radioGroup"
-                                                        value="private"
-                                                        checked={this.state.radioPrivacy === "private"}
-                                                        onChange={this.handleChangeRadio}
-                                                    />
-                                                </Form.Field>
-                                                <Form.Field>
-                                                    <Radio
-                                                        label="Public"
-                                                        name="radioGroup"
-                                                        value="public"
-                                                        checked={this.state.radioPrivacy === "public"}
-                                                        onChange={this.handleChangeRadio}
-                                                    />
-                                                </Form.Field>
-                                            </Form.Group>
-                                            */}
                                             <Form.Group grouped={true}>
                                                 <Select 
                                                     placeholder="Choose your image" 

@@ -15,6 +15,8 @@ class DashImage extends React.Component<any, any> {
 
     handleChangeRadio = (e: any, radio: any) => {
         this.setState({ radioPrivacy: radio.value });
+        let privacy = radio.value === "private" ? true : false;
+        this.props.Auth.changePrivacy(this.props.image.id, privacy);
     }
 
     render() {
@@ -33,6 +35,10 @@ class DashImage extends React.Component<any, any> {
                     <Grid.Row>
                         <Grid.Column>
                             <List>
+                                <List.Item>
+                                    <List.Header>Version</List.Header>
+                                    {this.props.image.version}
+                                </List.Item>
                                 <List.Item>
                                     <List.Header>Privacy</List.Header>
                                     <Form.Group grouped={true}>

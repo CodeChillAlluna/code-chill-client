@@ -1,5 +1,18 @@
 import * as React from "react";
-import { Grid, List, Header, Container, Icon , Modal, Button, Input, Popup, Loader } from "semantic-ui-react";
+import { 
+    Grid, 
+    List, 
+    Header, 
+    Container, 
+    Icon , 
+    Modal, 
+    Button, 
+    Input, 
+    Popup, 
+    Loader, 
+    Form, 
+    Radio 
+} from "semantic-ui-react";
 import DashGraph from "./DashGraph";
 import { toast } from "react-toastify";
 import { IDE } from "../../Routes";
@@ -32,7 +45,12 @@ class DashDocker extends React.Component<any, any> {
             "modalStartIDE": false,
             "modalStartIDEValidated": false,
             "isNameEditing": false,
-            "editDockerName": ""
+            "editDockerName": "",
+            "modalCommitImage": false,
+            "nameCommit": "",
+            "versionCommit": "",
+            "versionBeforeCommit": "",
+            "privacyCommit": ""
         };
         this.startDocker = this.startDocker.bind(this);
         this.stopDocker = this.stopDocker.bind(this);
@@ -44,6 +62,16 @@ class DashDocker extends React.Component<any, any> {
         this.handleChange = this.handleChange.bind(this);
 
         this.statsDocker();
+    }
+
+    componentWillMount() {
+        this.props.Auth.getImage(this.props.docker.id).then((res) => {
+            this.setState({
+                nameCommit: res.content.image.name,
+                versionBeforeCommit: res.content.image.version,
+                privacyCommit: res.content.image.privacy ? "public" : "private"
+            });
+        });
     }
     
     componentWillUnmount() {
@@ -230,9 +258,14 @@ class DashDocker extends React.Component<any, any> {
 
     showDeleteModal = () => this.setState({ modalDeleteValidation: true });
     showStartIDEModal = () => this.state.dockerRunning ? this.redirectIDE() : this.setState({ modalStartIDE: true });
+    showCommitModal = () => this.setState({ modalCommitImage: true });
+    closeCommitModal = () => this.setState({ modalCommitImage: false });
     closeDeleteModal = () => this.setState({ modalDeleteValidation: false });
     closeStartIDEModal = () => this.setState({ modalStartIDE: false });
     redirectIDE = () => this.props.parentProps.history.push(formatRoute(IDE, {id: this.props.docker.id}));
+
+    handleChangeNameCommit = (e: any) => this.setState({ nameCommit: e.target.value });
+    handleChangeVersionCommit = (e: any) => this.setState({ versionCommit: e.target.value });
 
     handlerBeforeIDE = () => {
         if (this.state.dockerPaused) {
@@ -250,6 +283,22 @@ class DashDocker extends React.Component<any, any> {
     exportContainer = () => this.props.Auth.exportContainer(this.props.docker.id);
 
     exportImage = () => this.props.Auth.exportImage();
+
+    commitImage = () => {
+        this.props.Auth.commitImage(
+            this.props.docker.id, 
+            this.state.nameCommit, 
+            this.state.versionCommit, 
+            this.state.privacyCommit === "public" ? false : true
+            ).then((res) => {
+            toast(res.content.message, res.content.toast);
+            this.closeCommitModal();
+        });
+    }
+
+    handleChangeRadioCommit = (e: any, radio: any) => {
+        this.setState({ privacyCommit: radio.value });
+    }
 
     render() {
         return (
@@ -477,18 +526,79 @@ class DashDocker extends React.Component<any, any> {
                         <Grid.Column>
                             <List>
                                 <List.Item>
-                                    <List.Header>Export</List.Header>
-                                    <Button.Group vertical labeled icon>
-                                        <Button icon labelPosition="left" onClick={this.exportContainer} size="small">
-                                            <Icon name="download" />
+                                    <List.Header><Icon name="download" /> Export</List.Header>
+                                    <Button.Group widths="2">
+                                        <Button onClick={this.exportContainer}>
                                             Container
                                         </Button>
                                         <Button.Or />
-                                        <Button icon labelPosition="right" onClick={this.exportImage} size="small">
-                                            <Icon name="download" />
+                                        <Button onClick={this.exportImage}>
                                             Image
                                         </Button>
                                     </Button.Group>
+                                </List.Item>
+                                <List.Item>
+                                    <List.Header><Icon name="save" /> Save Image</List.Header>
+                                    <Button.Group widths="1">
+                                        <Button onClick={this.showCommitModal}>
+                                            Save
+                                        </Button>
+                                    </Button.Group>
+                                    <Modal
+                                        size="small"
+                                        open={this.state.modalCommitImage}
+                                        onClose={this.closeCommitModal}
+                                    >
+                                        <Header icon="plus square outline" content="Save Image" />
+                                        <Modal.Content>
+                                        <Form>
+                                            <Form.Group>
+                                                <Form.Input
+                                                    label="Name"
+                                                    required={true}
+                                                    name="Name"
+                                                    placeholder="Name"
+                                                    value={this.state.nameCommit}
+                                                    width={12}
+                                                    onChange={this.handleChangeNameCommit}
+                                                />
+                                                <Form.Input
+                                                    label="Version"
+                                                    required={true}
+                                                    name="Version"
+                                                    placeholder={this.state.versionBeforeCommit}
+                                                    width={4}
+                                                    onChange={this.handleChangeVersionCommit}
+                                                />
+                                            </Form.Group>
+                                            <Form.Group inline={true}>
+                                                <label>Privacy</label>
+                                                <Form.Field
+                                                    control={Radio}
+                                                    label="Private"
+                                                    value="private"
+                                                    checked={this.state.privacyCommit === "private"}
+                                                    onChange={this.handleChangeRadioCommit}
+                                                />
+                                                <Form.Field
+                                                    control={Radio}
+                                                    label="Public"
+                                                    value="public"
+                                                    checked={this.state.privacyCommit === "public"}
+                                                    onChange={this.handleChangeRadioCommit}
+                                                />
+                                            </Form.Group>
+                                        </Form>
+                                        </Modal.Content>
+                                        <Modal.Actions>
+                                                <Button color="red" inverted={true} onClick={this.closeCommitModal}>
+                                                    <Icon name="remove" /> Cancel
+                                                </Button>
+                                                <Button color="green" inverted={true} onClick={this.commitImage}>
+                                                    <Icon name="checkmark"/> Save
+                                                </Button>
+                                        </Modal.Actions>
+                                    </Modal>
                                 </List.Item>
                             </List>
                         </Grid.Column>

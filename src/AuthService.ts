@@ -361,6 +361,38 @@ export default class AuthService {
         });
     }
 
+    getImage(id: number) {
+        return this.fetch(`${this.domain}/images/${id}`, {
+            method: "GET",
+        }).then((res) => {
+            return Promise.resolve(res);
+        });
+    }
+
+    commitImage(id: number, name: string, version: string, privacy: boolean) {
+        return this.fetch(`${this.domain}/containers/${id}/commit`, {
+            method: "POST",
+            body: JSON.stringify({ "name": name, "version": version, privacy: privacy })
+        }).then((res) => {
+            if (res.status === 201) {
+                res["content"]["message"] = "Commit done.";
+                res["content"]["toast"] = ToastConfig.SUCCESS;
+            } else {
+                res["content"]["message"] = "Could not commit.";
+                res["content"]["toast"] = ToastConfig.ERROR;
+            }
+            return Promise.resolve(res);
+        });
+    }
+
+    changePrivacy(id: number, privacy: boolean) {
+        return this.fetch(`${this.domain}/images/${id}/privacy/${privacy}`, {
+            method: "PUT",
+        }).then((res) => {
+            return Promise.resolve(res);
+        });
+    }
+
     parseResponse(res: any) {
         let response = new Response();
         response.status = res.status;
