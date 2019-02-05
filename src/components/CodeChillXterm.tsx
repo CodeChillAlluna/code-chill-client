@@ -69,6 +69,7 @@ attach/ws?logs=0&stream=1&stdin=1&stdout=1&stderr=1`);
             delete this.xterm;
         }
         this.Auth.stopDocker(this.props.user.dockers[0].name).then((res) => {
+            console.log(res);
         });
     }
 
