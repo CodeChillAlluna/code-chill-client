@@ -85,6 +85,30 @@ export default class AuthService {
             return Promise.resolve(res);
         });
     }
+    
+    getAllSharedDockerForUser() {
+        return this.fetch(`${this.domain}/user/env/shared`, {
+            method: "GET"
+        }).then((res) => {
+            return Promise.resolve(res);
+        });
+    }
+
+    getAllUserDockerShared(id: number) {
+        return this.fetch(`${this.domain}/user/env/${id}/shared`, {
+            method: "GET"
+        }).then((res) => {
+            return Promise.resolve(res);
+        });
+    }
+
+    getAllUsers() {
+        return this.fetch(`${this.domain}/user/all`, {
+            method: "GET"
+        }).then((res) => {
+            return Promise.resolve(res);
+        });
+    }
 
     editUser(user: Object) {
         return this.fetch(`${this.domain}/user`, {
@@ -389,6 +413,43 @@ export default class AuthService {
         return this.fetch(`${this.domain}/images/${id}/privacy/${privacy}`, {
             method: "PUT",
         }).then((res) => {
+            return Promise.resolve(res);
+        });
+    }
+
+    shareEnv(idEnv: number, idUser: number) {
+        return this.fetch(`${this.domain}/user/env/${idEnv}/share`, {
+            method: "POST",
+            body: JSON.stringify({ 
+                "userId": idUser,
+                "readOnly": true
+            })
+        }).then((res) => {
+            if (res.status === 200) {
+                res["content"]["message"] = "Successfully share your environment";
+                res["content"]["toast"] = ToastConfig.SUCCESS;
+            } else {
+                res["content"]["message"] = "Could not share.";
+                res["content"]["toast"] = ToastConfig.ERROR;
+            }
+            return Promise.resolve(res);
+        });
+    }
+
+    removeShareEnv(idEnv: number, idUser: number) {
+        return this.fetch(`${this.domain}/user/env/${idEnv}/share`, {
+            method: "DELETE",
+            body: JSON.stringify({ 
+                "userId": idUser
+            })
+        }).then((res) => {
+            if (res.status === 200) {
+                res["content"]["message"] = "Successfully removing the sharing.";
+                res["content"]["toast"] = ToastConfig.SUCCESS;
+            } else {
+                res["content"]["message"] = "Could not remove your sharing.";
+                res["content"]["toast"] = ToastConfig.ERROR;
+            }
             return Promise.resolve(res);
         });
     }
