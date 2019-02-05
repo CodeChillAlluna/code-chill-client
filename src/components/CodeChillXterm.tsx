@@ -50,6 +50,7 @@ class CodeChillXterm extends React.Component<IxTermProps, IxTermState> {
         this.webSocket = new WebSocket(`${(window as any).env.dockerApi}/containers/${this.props.user.dockers[0].name}/
 attach/ws?logs=0&stream=1&stdin=1&stdout=1&stderr=1`);
         this.Auth.startDocker(this.props.user.dockers[0].name).then((res) => {
+            console.log(res);
         });
     }
 
