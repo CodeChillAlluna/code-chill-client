@@ -22,7 +22,7 @@ export default class HelpButton extends React.Component<any, any> {
 
     render () {
         return (
-            <Rail position="right">
+            <Rail position="left">
                 <Sticky offset={70}>
                     <Icon
                         inverted={!this.state.menuOpen}
