@@ -748,7 +748,7 @@ class DashDocker extends React.Component<any, any> {
                         </Grid.Column>
                     </Grid.Row>
                     <Grid.Row columns={3}>
-                    <Grid.Column width={1}></Grid.Column>
+                    <Grid.Column width={1} />
                         <Grid.Column width={14}>
                             <h3>
                                 <small>Share environment </small>
