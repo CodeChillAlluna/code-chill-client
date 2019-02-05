@@ -454,6 +454,14 @@ export default class AuthService {
         });
     }
 
+    checkUserHaveAccess (idEnv: number, idUser: number) {
+        return this.fetch(`${this.domain}/user/env/${idEnv}/check`, {
+            method: "GET"
+        }).then((res) => {
+            return Promise.resolve(res);
+        });
+    }
+
     parseResponse(res: any) {
         let response = new Response();
         response.status = res.status;

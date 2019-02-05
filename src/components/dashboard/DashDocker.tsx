@@ -70,7 +70,8 @@ class DashDocker extends React.Component<any, any> {
     }
 
     componentWillMount() {
-        this.props.Auth.getImage(this.props.docker.id).then((res) => {
+        this.props.Auth.getImage(this.props.docker.image.id).then((res) => {
+            console.log(res);
             this.setState({
                 nameCommit: res.content.image.name,
                 versionBeforeCommit: res.content.image.version,
