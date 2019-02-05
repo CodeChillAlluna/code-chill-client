@@ -85,7 +85,6 @@ class DashMenu extends React.Component<any, any> {
                 <Grid>
                 <Grid.Row columns={2}>
 
-                    <HelpButton />
                     <Grid.Column>
                         <Header as="h1">Dashboard</Header>
                     </Grid.Column>
@@ -133,6 +132,7 @@ class DashMenu extends React.Component<any, any> {
                                 </Modal>
                             </h2>
                         </Container>
+                        <HelpButton />
                     </Grid.Column>
                 </Grid.Row>
                 </Grid>

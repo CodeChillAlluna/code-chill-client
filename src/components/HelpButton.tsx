@@ -22,7 +22,7 @@ export default class HelpButton extends React.Component<any, any> {
 
     render () {
         return (
-            <Rail position="left">
+            <Rail position="right" size="mini">
                 <Sticky offset={70}>
                     <Icon
                         inverted={!this.state.menuOpen}
@@ -35,7 +35,7 @@ export default class HelpButton extends React.Component<any, any> {
                     />
                 {
                     this.state.menuOpen ?
-                        <Segment color="orange" inverted={true}>
+                        <Segment color="orange" inverted={true} size="mini">
                             <Accordion inverted={true}>
                                 <Accordion.Title
                                     active={this.state.activeIndex === 0}
