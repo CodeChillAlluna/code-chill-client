@@ -805,6 +805,5 @@ class DashDocker extends React.Component<any, any> {
             </div>
         );
     }
-
 }
 export default DashDocker;

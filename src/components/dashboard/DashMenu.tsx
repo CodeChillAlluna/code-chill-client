@@ -19,6 +19,8 @@ import DashDocker from "./DashDocker";
 import { toast } from "react-toastify";
 import * as ToastConfig from "../../constants/toast.config";
 
+import HelpButton from "../HelpButton";
+
 class DashMenu extends React.Component<any, any> {
     Auth: AuthService;
     userUpdate: Object;
@@ -116,11 +118,13 @@ class DashMenu extends React.Component<any, any> {
             <div>
                 <Grid>
                 <Grid.Row columns={2}>
+
                     <Grid.Column>
                         <Header as="h1">Dashboard</Header>
                     </Grid.Column>
                     <Grid.Column>
                         <Container textAlign="right">
+
                             <h2>
                                 <small>Add new environment </small>
                                 <Icon 
@@ -175,6 +179,7 @@ class DashMenu extends React.Component<any, any> {
                                 </Modal>
                             </h2>
                         </Container>
+                        <HelpButton />
                     </Grid.Column>
                 </Grid.Row>
                 </Grid>
