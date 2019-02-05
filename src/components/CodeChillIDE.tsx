@@ -37,7 +37,6 @@ class CodeChillIDE extends React.Component<any, any> {
 
     render() {
         let height = window.innerHeight - 61;
-        console.log(this.src);
         return (
             <iframe
                 src={this.state.src}

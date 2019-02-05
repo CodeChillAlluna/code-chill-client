@@ -10,3 +10,4 @@ export const DASHBOARD = "/dashboard";
 export const DASHBOARDIMAGE = "/user/images";
 export const ERRORSERVER = "/internalerror";
 export const NOTFOUND = "*";
+export const SHAREDENV = "/dashboard/shared";

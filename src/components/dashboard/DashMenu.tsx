@@ -68,7 +68,6 @@ class DashMenu extends React.Component<any, any> {
 
     showAddModal = () => {
         this.Auth.getImages().then((res) => {
-            console.log(res);
             let imgs = [];
             for (let img of res.content.images) {
                 imgs.push({ "text": img.name, "value": img.id });

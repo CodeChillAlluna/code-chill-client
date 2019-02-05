@@ -320,7 +320,6 @@ export default class AuthService {
             window.URL.revokeObjectURL(url);
         })
         .catch((error) => {
-            console.log(error);
             toast.update(toastId, { type: toast.TYPE.SUCCESS, autoClose: 5000, render: "It failed, sorry :(" });
         });
     }
@@ -344,7 +343,6 @@ export default class AuthService {
             headers: headers
         })
         .then((response) => {
-            console.log(response);
             toast.update(toastId, { type: toast.TYPE.SUCCESS, autoClose: 5000, render: "Done." });
             let fileName: string = `code-chill-ide.tar`;
             const contentDisposition = response["headers"]["content-disposition"];
@@ -364,7 +362,6 @@ export default class AuthService {
             window.URL.revokeObjectURL(url);
         })
         .catch((error) => {
-            console.log(error);
             toast.update(toastId, { type: toast.TYPE.SUCCESS, autoClose: 5000, render: "It failed, sorry :(" });
         });
     }

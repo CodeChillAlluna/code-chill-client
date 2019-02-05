@@ -15,6 +15,7 @@ import UserForgotPassword from "./user/UserForgotPassword";
 import UserResetPassword from "./user/UserResetPassword";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import SharedEnvMenu from "./dashboard/SharedEnvMenu";
 const config = require("../../package.json");
 
 export default class CodeChillRouter extends React.Component<any, any> {
@@ -70,6 +71,10 @@ export default class CodeChillRouter extends React.Component<any, any> {
                             exact={true}
                             path={R.DASHBOARD}
                             component={DashMenu}
+                        />
+                        <Route
+                            path={R.SHAREDENV}
+                            component={SharedEnvMenu}
                         />
                         <Route
                             exact={true}

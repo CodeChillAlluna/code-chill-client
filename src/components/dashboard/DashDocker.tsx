@@ -71,7 +71,6 @@ class DashDocker extends React.Component<any, any> {
 
     componentWillMount() {
         this.props.Auth.getImage(this.props.docker.image.id).then((res) => {
-            console.log(res);
             this.setState({
                 nameCommit: res.content.image.name,
                 versionBeforeCommit: res.content.image.version,
@@ -621,7 +620,7 @@ class DashDocker extends React.Component<any, any> {
                                 </List.Item>
                                 <List.Item>
                                     <List.Header>Image</List.Header>
-                                    {this.state.dockerImage}
+                                    {this.state.dockerImage} {this.props.docker.image.version}
                                 </List.Item>
                                 <List.Item>
                                     <List.Header>Creation date</List.Header>
@@ -800,7 +799,7 @@ class DashDocker extends React.Component<any, any> {
                             <p>Your environment is not shared with anyone.</p>
                             }
                         </Grid.Column>
-                        <Grid.Column width={1}></Grid.Column>
+                        <Grid.Column width={1} />
                     </Grid.Row>
                 </Grid>
             </div>
