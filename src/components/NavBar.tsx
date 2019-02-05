@@ -12,7 +12,7 @@ import {
   } from "semantic-ui-react";
 import { Link } from "react-router-dom";
 import { formatRoute } from "react-router-named-routes";
-import { DASHBOARD, HOME, LOGIN, PROFILE } from "../Routes";
+import { DASHBOARD, HOME, LOGIN, PROFILE, DASHBOARDIMAGE, SHAREDENV } from "../Routes";
 const logo = require("../resources/logocodeandchill.png");
 
 const NavBarChildren = ({ children }) => (
@@ -51,7 +51,9 @@ export default class NavBar extends React.Component<any, any> {
                 </Dropdown>
             );
             leftItems = [
-                { as: Link, content: "Dashboard", key: "dashboard", to: formatRoute(DASHBOARD) }
+                { as: Link, content: "Dashboard", key: "dashboard", to: formatRoute(DASHBOARD) },
+                { as: Link, content: "Shared Env.", key: "shared", to: formatRoute(SHAREDENV) },
+                { as: Link, content: "Images", key: "images", to: formatRoute(DASHBOARDIMAGE) }
             ];
         } else {
             rmenu = (

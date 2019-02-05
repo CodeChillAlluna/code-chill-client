@@ -85,6 +85,30 @@ export default class AuthService {
             return Promise.resolve(res);
         });
     }
+    
+    getAllSharedDockerForUser() {
+        return this.fetch(`${this.domain}/user/env/shared`, {
+            method: "GET"
+        }).then((res) => {
+            return Promise.resolve(res);
+        });
+    }
+
+    getAllUserDockerShared(id: number) {
+        return this.fetch(`${this.domain}/user/env/${id}/shared`, {
+            method: "GET"
+        }).then((res) => {
+            return Promise.resolve(res);
+        });
+    }
+
+    getAllUsers() {
+        return this.fetch(`${this.domain}/user/all`, {
+            method: "GET"
+        }).then((res) => {
+            return Promise.resolve(res);
+        });
+    }
 
     editUser(user: Object) {
         return this.fetch(`${this.domain}/user`, {
@@ -142,10 +166,10 @@ export default class AuthService {
         });
     }
 
-    createDocker(name: string) {
+    createDocker(name: string, idImage: number) {
         return this.fetch(`${this.domain}/containers/create`, {
             method: "POST",
-            body: JSON.stringify({ "name": name })
+            body: JSON.stringify({ "name": name, "imageId": idImage })
         }).then((res) => {
             if (res.status === 200) {
                 res["content"]["message"] = "Docker created.";
@@ -296,7 +320,6 @@ export default class AuthService {
             window.URL.revokeObjectURL(url);
         })
         .catch((error) => {
-            console.log(error);
             toast.update(toastId, { type: toast.TYPE.SUCCESS, autoClose: 5000, render: "It failed, sorry :(" });
         });
     }
@@ -320,7 +343,6 @@ export default class AuthService {
             headers: headers
         })
         .then((response) => {
-            console.log(response);
             toast.update(toastId, { type: toast.TYPE.SUCCESS, autoClose: 5000, render: "Done." });
             let fileName: string = `code-chill-ide.tar`;
             const contentDisposition = response["headers"]["content-disposition"];
@@ -340,10 +362,102 @@ export default class AuthService {
             window.URL.revokeObjectURL(url);
         })
         .catch((error) => {
-            console.log(error);
             toast.update(toastId, { type: toast.TYPE.SUCCESS, autoClose: 5000, render: "It failed, sorry :(" });
         });
-    }  
+    }
+
+    getImages() {
+        return this.fetch(`${this.domain}/images`, {
+            method: "GET",
+        }).then((res) => {
+            return Promise.resolve(res);
+        });
+    }
+
+    getUserImages() {
+        return this.fetch(`${this.domain}/user/images`, {
+            method: "GET",
+        }).then((res) => {
+            return Promise.resolve(res);
+        });
+    }
+
+    getImage(id: number) {
+        return this.fetch(`${this.domain}/images/${id}`, {
+            method: "GET",
+        }).then((res) => {
+            return Promise.resolve(res);
+        });
+    }
+
+    commitImage(id: number, name: string, version: string, privacy: boolean) {
+        return this.fetch(`${this.domain}/containers/${id}/commit`, {
+            method: "POST",
+            body: JSON.stringify({ "name": name, "version": version, privacy: privacy })
+        }).then((res) => {
+            if (res.status === 201) {
+                res["content"]["message"] = "Commit done.";
+                res["content"]["toast"] = ToastConfig.SUCCESS;
+            } else {
+                res["content"]["message"] = "Could not commit.";
+                res["content"]["toast"] = ToastConfig.ERROR;
+            }
+            return Promise.resolve(res);
+        });
+    }
+
+    changePrivacy(id: number, privacy: boolean) {
+        return this.fetch(`${this.domain}/images/${id}/privacy/${privacy}`, {
+            method: "PUT",
+        }).then((res) => {
+            return Promise.resolve(res);
+        });
+    }
+
+    shareEnv(idEnv: number, idUser: number) {
+        return this.fetch(`${this.domain}/user/env/${idEnv}/share`, {
+            method: "POST",
+            body: JSON.stringify({ 
+                "userId": idUser,
+                "readOnly": true
+            })
+        }).then((res) => {
+            if (res.status === 200) {
+                res["content"]["message"] = "Successfully share your environment";
+                res["content"]["toast"] = ToastConfig.SUCCESS;
+            } else {
+                res["content"]["message"] = "Could not share.";
+                res["content"]["toast"] = ToastConfig.ERROR;
+            }
+            return Promise.resolve(res);
+        });
+    }
+
+    removeShareEnv(idEnv: number, idUser: number) {
+        return this.fetch(`${this.domain}/user/env/${idEnv}/share`, {
+            method: "DELETE",
+            body: JSON.stringify({ 
+                "userId": idUser
+            })
+        }).then((res) => {
+            if (res.status === 200) {
+                res["content"]["message"] = "Successfully removing the sharing.";
+                res["content"]["toast"] = ToastConfig.SUCCESS;
+            } else {
+                res["content"]["message"] = "Could not remove your sharing.";
+                res["content"]["toast"] = ToastConfig.ERROR;
+            }
+            return Promise.resolve(res);
+        });
+    }
+
+    checkUserHaveAccess (idEnv: number, idUser: number) {
+        return this.fetch(`${this.domain}/user/env/${idEnv}/check`, {
+            method: "GET"
+        }).then((res) => {
+            return Promise.resolve(res);
+        });
+    }
 
     parseResponse(res: any) {
         let response = new Response();
