@@ -26,7 +26,8 @@ export default class HelpButton extends React.Component<any, any> {
                 style={{
                     right: 8,
                     bottom: 8,
-                    position: "fixed"
+                    position: "fixed",
+                    zIndex: 99
                 }}
             >
                 {
