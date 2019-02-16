@@ -11,7 +11,7 @@
     "jwt-decode": "^2.2.0",
     "package": "^1.0.1",
     "react": "^16.5.2",
-    "react-date-picker": "^7.2.0",
+    "react-datetime-picker": "^2.1.1",
     "react-dom": "^16.5.2",
     "react-redux": "^5.0.7",
     "react-router-dom": "^4.3.1",

@@ -19,6 +19,7 @@ import { toast } from "react-toastify";
 import { IDE } from "../../Routes";
 import { formatRoute } from "react-router-named-routes";
 import * as ToastConfig from "../../constants/toast.config";
+import DateTimePicker from "react-datetime-picker";
 
 class DashDocker extends React.Component<any, any> {
     userUpdate: Object;
@@ -55,7 +56,8 @@ class DashDocker extends React.Component<any, any> {
             "privacyCommit": "",
             "usersNotShared": [],
             "usersShared": [],
-            "dataShared": []
+            "dataShared": [],
+            "dateUserNotShare": []
         };
         this.startDocker = this.startDocker.bind(this);
         this.stopDocker = this.stopDocker.bind(this);
@@ -84,8 +86,13 @@ class DashDocker extends React.Component<any, any> {
         }).then(() => {
             this.props.Auth.getAllUsers().then((res) => {
                 let usersNotShared = res.content.users.filter(this.checkUnshared);
+                let dates = [];
+                for (let i = 0; i < usersNotShared.length; i++) {
+                    dates[i] = new Date();
+                }
                 this.setState({ 
-                    usersNotShared: usersNotShared
+                    usersNotShared: usersNotShared,
+                    dateUserNotShare: dates
                 });
             });
         });
@@ -349,15 +356,17 @@ class DashDocker extends React.Component<any, any> {
         });
     }
 
-    shareEnv = (user: any) => {        
-        this.props.Auth.shareEnv(this.props.docker.id, user.id).then((res) => {
+    shareEnv = (user: any, date: any, i: number) => {        
+        this.props.Auth.shareEnv(this.props.docker.id, user.id, date).then((res) => {
             toast(res.content.message, res.content.toast);
         }).then(() => {
             this.props.Auth.getAllUserDockerShared(this.props.docker.id).then((res) => {
+                this.state.dateUserNotShare.splice(i, 1);
                 this.setState({ 
                     usersShared: this.state.usersShared.concat(user),
                     dataShared: res.content.share_infos,
                     usersNotShared: this.state.usersNotShared.filter((item) => item.id !== user.id),
+                    dateUserNotShare: this.state.dateUserNotShare
                 });
             });
         });
@@ -372,11 +381,37 @@ class DashDocker extends React.Component<any, any> {
             toast(res.content.message, res.content.toast);
         }).then(() => {
             this.props.Auth.getAllUserDockerShared(this.props.docker.id).then((res) => {
+                this.state.dateUserNotShare.push(new Date());
                 this.setState({ 
                     usersShared: res.content.users,
                     dataShared: res.content.share_infos,
                     usersNotShared: this.state.usersNotShared.concat(user),
+                    dateUserNotShare: this.state.dateUserNotShare
                 });
+            });
+        });
+    }
+
+    onChangeDate = (e: any, i: number) => {
+        this.state.dateUserNotShare[i] = e;
+        this.setState({ dateUserNotShare:  this.state.dateUserNotShare });
+    }
+
+    onChangeSharedDate = (date: any, i: number) => {
+        this.state.dataShared[i].expiration = date;
+        this.setState({ dataShared: this.state.dataShared });
+    }
+
+    updateShare = (i: number) => {
+        this.props.Auth.shareEnv(
+            this.props.docker.id, 
+            this.state.usersShared[i].id, 
+            new Date(this.state.dataShared[i].expiration)
+            ).then((res) => {
+            toast("Expiration date changed", res.content.toast);
+        }).then(() => {
+            this.props.Auth.getAllUserDockerShared(this.props.docker.id).then((res) => {
+                this.setState({ dataShared: res.content.share_infos });
             });
         });
     }
@@ -384,22 +419,29 @@ class DashDocker extends React.Component<any, any> {
     render() {
         let body = [];
         for (let i = 0; i < this.state.usersShared.length; i++) {
+            let date = new Date(this.state.dataShared[i].expiration);
             body.push(
                 <Table.Row key={this.state.usersShared[i].username}>
                     <Table.Cell>{this.state.usersShared[i].firstname} {this.state.usersShared[i].lastname}</Table.Cell>
                     <Table.Cell>
-                        {/* date picker */}
+                    <DateTimePicker
+                        onChange={(e) => this.onChangeSharedDate(e, i)}
+                        value={date}
+                    />
                     </Table.Cell>
                     <Table.Cell>
-                        <Icon.Group 
-                            style={{ cursor: "pointer" }} 
+                        <Icon 
+                            color="red" 
+                            name="close"
                             onClick={() => this.removeShareEnv(this.state.usersShared[i])}
-                        >
-                            <Icon 
-                                color="red" 
-                                name="close"
-                            />
-                        </Icon.Group>
+                            style={{ cursor: "pointer" }} 
+                        />
+                        <Icon 
+                            color="green" 
+                            name="check"
+                            onClick={() => this.updateShare(i) }
+                            style={{ cursor: "pointer" }} 
+                        />
                     </Table.Cell>
                 </Table.Row>
             );
@@ -413,12 +455,17 @@ class DashDocker extends React.Component<any, any> {
                         {this.state.usersNotShared[i].firstname} {this.state.usersNotShared[i].lastname}
                     </Table.Cell>
                     <Table.Cell>
-                        {/* Data picker */}
+                    <DateTimePicker
+                        onChange={(e) => this.onChangeDate(e, i)}
+                        value={this.state.dateUserNotShare[i]}
+                    />
                     </Table.Cell>
                     <Table.Cell>
                         <Icon.Group 
                             style={{ cursor: "pointer" }} 
-                            onClick={() => this.shareEnv(this.state.usersNotShared[i])}
+                            onClick={() => {
+                                this.shareEnv(this.state.usersNotShared[i], this.state.dateUserNotShare[i], i);
+                            }}
                         >
                             <Icon 
                                 color="green" 
@@ -793,7 +840,7 @@ class DashDocker extends React.Component<any, any> {
                                     <Table.Header>
                                     <Table.Row>
                                         <Table.HeaderCell>Name</Table.HeaderCell>
-                                        <Table.HeaderCell>Unitl</Table.HeaderCell>
+                                        <Table.HeaderCell>Until</Table.HeaderCell>
                                         <Table.HeaderCell>Action</Table.HeaderCell>
                                     </Table.Row>
                                     </Table.Header>

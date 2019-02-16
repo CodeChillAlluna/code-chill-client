@@ -421,16 +421,17 @@ export default class AuthService {
         });
     }
 
-    shareEnv(idEnv: number, idUser: number) {
+    shareEnv(idEnv: number, idUser: number, date: Date) {
         return this.fetch(`${this.domain}/user/env/${idEnv}/share`, {
             method: "POST",
             body: JSON.stringify({ 
                 "userId": idUser,
-                "readOnly": true
+                "readOnly": true,
+                "expirationDate": date.getTime() 
             })
         }).then((res) => {
             if (res.status === 200) {
-                res["content"]["message"] = "Successfully share your environment";
+                res["content"]["message"] = "Successfully shared your environment";
                 res["content"]["toast"] = ToastConfig.SUCCESS;
             } else {
                 res["content"]["message"] = "Could not share.";
