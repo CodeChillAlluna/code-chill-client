@@ -2,6 +2,10 @@ import * as decode from "jwt-decode";
 import * as request from "./constants/request.config";
 import Response from "./Response";
 import * as ToastConfig from "./constants/toast.config";
+import Axios from "axios";
+import { toast } from "react-toastify";
+import { createElement } from "react";
+import ToastExport from "./components/toast/ToastExport";
 
 export default class AuthService {
     // Initializing important variables
@@ -81,6 +85,30 @@ export default class AuthService {
             return Promise.resolve(res);
         });
     }
+    
+    getAllSharedDockerForUser() {
+        return this.fetch(`${this.domain}/user/env/shared`, {
+            method: "GET"
+        }).then((res) => {
+            return Promise.resolve(res);
+        });
+    }
+
+    getAllUserDockerShared(id: number) {
+        return this.fetch(`${this.domain}/user/env/${id}/shared`, {
+            method: "GET"
+        }).then((res) => {
+            return Promise.resolve(res);
+        });
+    }
+
+    getAllUsers() {
+        return this.fetch(`${this.domain}/user/all`, {
+            method: "GET"
+        }).then((res) => {
+            return Promise.resolve(res);
+        });
+    }
 
     editUser(user: Object) {
         return this.fetch(`${this.domain}/user`, {
@@ -138,10 +166,10 @@ export default class AuthService {
         });
     }
 
-    createDocker(name: string) {
+    createDocker(name: string, idImage: number) {
         return this.fetch(`${this.domain}/containers/create`, {
             method: "POST",
-            body: JSON.stringify({ "name": name })
+            body: JSON.stringify({ "name": name, "imageId": idImage })
         }).then((res) => {
             if (res.status === 200) {
                 res["content"]["message"] = "Docker created.";
@@ -249,6 +277,191 @@ export default class AuthService {
     statsDocker(id: number) {
         return this.fetch(`${this.domain}/containers/${id}/stats`, {
             method: "GET",
+        }).then((res) => {
+            return Promise.resolve(res);
+        });
+    }
+
+    exportContainer(id: number) {
+        let toastId = toast(
+            createElement(ToastExport, {loading: true, message: " Compressing environment..."}, null), 
+            ToastConfig.LOADING_EXPORT  
+        );
+        const headers = {
+            "Content-Type": "application/json",
+            "Accept": "application/octet-stream"
+        };
+        if (this.loggedIn()) {
+            headers["Authorization"] = "Bearer " + this.getToken();
+        }
+        Axios({
+            method: "get",
+            url: `${this.domain}/containers/${id}/export`, 
+            responseType: "blob",
+            headers: headers
+        })
+        .then((response) => {
+            toast.update(toastId, { type: toast.TYPE.SUCCESS, autoClose: 5000, render: "Done." });
+            let fileName: string = `container_${id}.tar`;
+            const contentDisposition = response["headers"]["content-disposition"];
+            if (contentDisposition) {
+                const fileNameMatch = contentDisposition.match(/filename="(.+)"/);
+                if (fileNameMatch.length === 2) {
+                    fileName = fileNameMatch[1];
+                }
+            }
+            const url = window.URL.createObjectURL(new Blob([response.data], {type: "application/octet-stream"}));
+            const link = document.createElement("a");
+            link.href = url;
+            link.setAttribute("download", fileName);
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+            window.URL.revokeObjectURL(url);
+        })
+        .catch((error) => {
+            toast.update(toastId, { type: toast.TYPE.SUCCESS, autoClose: 5000, render: "It failed, sorry :(" });
+        });
+    }
+
+    exportImage() {
+        let toastId = toast(
+            createElement(ToastExport, {loading: true, message: " Compressing image..."}, null), 
+            ToastConfig.LOADING_EXPORT  
+        );
+        const headers = {
+            "Content-Type": "application/json",
+            "Accept": "application/octet-stream"
+        };
+        if (this.loggedIn()) {
+            headers["Authorization"] = "Bearer " + this.getToken();
+        }
+        Axios({
+            method: "get",
+            url: `${this.domain}/images/codechillaluna/code-chill-ide/get`, 
+            responseType: "blob",
+            headers: headers
+        })
+        .then((response) => {
+            toast.update(toastId, { type: toast.TYPE.SUCCESS, autoClose: 5000, render: "Done." });
+            let fileName: string = `code-chill-ide.tar`;
+            const contentDisposition = response["headers"]["content-disposition"];
+            if (contentDisposition) {
+                const fileNameMatch = contentDisposition.match(/filename="(.+)"/);
+                if (fileNameMatch.length === 2) {
+                    fileName = fileNameMatch[1];
+                }
+            }
+            const url = window.URL.createObjectURL(new Blob([response.data], {type: "application/octet-stream"}));
+            const link = document.createElement("a");
+            link.href = url;
+            link.setAttribute("download", fileName);
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+            window.URL.revokeObjectURL(url);
+        })
+        .catch((error) => {
+            toast.update(toastId, { type: toast.TYPE.SUCCESS, autoClose: 5000, render: "It failed, sorry :(" });
+        });
+    }
+
+    getImages() {
+        return this.fetch(`${this.domain}/images`, {
+            method: "GET",
+        }).then((res) => {
+            return Promise.resolve(res);
+        });
+    }
+
+    getUserImages() {
+        return this.fetch(`${this.domain}/user/images`, {
+            method: "GET",
+        }).then((res) => {
+            return Promise.resolve(res);
+        });
+    }
+
+    getImage(id: number) {
+        return this.fetch(`${this.domain}/images/${id}`, {
+            method: "GET",
+        }).then((res) => {
+            return Promise.resolve(res);
+        });
+    }
+
+    commitImage(id: number, name: string, version: string, privacy: boolean) {
+        return this.fetch(`${this.domain}/containers/${id}/commit`, {
+            method: "POST",
+            body: JSON.stringify({ "name": name, "version": version, privacy: privacy })
+        }).then((res) => {
+            if (res.status === 201) {
+                res["content"]["message"] = "Commit done.";
+                res["content"]["toast"] = ToastConfig.SUCCESS;
+            } else {
+                res["content"]["message"] = "Could not commit.";
+                res["content"]["toast"] = ToastConfig.ERROR;
+            }
+            return Promise.resolve(res);
+        });
+    }
+
+    changePrivacy(id: number, privacy: boolean) {
+        return this.fetch(`${this.domain}/images/${id}/privacy/${privacy}`, {
+            method: "PUT",
+        }).then((res) => {
+            if (res.status === 200) {
+                res["content"]["message"] = "Privacy changed.";
+                res["content"]["toast"] = ToastConfig.SUCCESS;
+            } else {
+                res["content"]["message"] = "Could not change privacy.";
+                res["content"]["toast"] = ToastConfig.ERROR;
+            }
+            return Promise.resolve(res);
+        });
+    }
+
+    shareEnv(idEnv: number, idUser: number, date: Date) {
+        return this.fetch(`${this.domain}/user/env/${idEnv}/share`, {
+            method: "POST",
+            body: JSON.stringify({ 
+                "userId": idUser,
+                "readOnly": true,
+                "expirationDate": date.getTime() 
+            })
+        }).then((res) => {
+            if (res.status === 200) {
+                res["content"]["message"] = "Successfully shared your environment";
+                res["content"]["toast"] = ToastConfig.SUCCESS;
+            } else {
+                res["content"]["message"] = "Could not share.";
+                res["content"]["toast"] = ToastConfig.ERROR;
+            }
+            return Promise.resolve(res);
+        });
+    }
+
+    removeShareEnv(idEnv: number, idUser: number) {
+        return this.fetch(`${this.domain}/user/env/${idEnv}/share`, {
+            method: "DELETE",
+            body: JSON.stringify({ 
+                "userId": idUser
+            })
+        }).then((res) => {
+            if (res.status === 200) {
+                res["content"]["message"] = "Successfully removing the sharing.";
+                res["content"]["toast"] = ToastConfig.SUCCESS;
+            } else {
+                res["content"]["message"] = "Could not remove your sharing.";
+                res["content"]["toast"] = ToastConfig.ERROR;
+            }
+            return Promise.resolve(res);
+        });
+    }
+
+    checkUserHaveAccess (idEnv: number, idUser: number) {
+        return this.fetch(`${this.domain}/user/env/${idEnv}/check`, {
+            method: "GET"
         }).then((res) => {
             return Promise.resolve(res);
         });

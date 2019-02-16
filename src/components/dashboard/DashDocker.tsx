@@ -1,10 +1,25 @@
 import * as React from "react";
-import { Grid, List, Header, Container, Icon , Modal, Button, Input, Popup, Loader } from "semantic-ui-react";
+import { 
+    Grid, 
+    List, 
+    Header, 
+    Container, 
+    Icon , 
+    Modal, 
+    Button, 
+    Input, 
+    Popup, 
+    Loader, 
+    Form, 
+    Radio,
+    Table
+} from "semantic-ui-react";
 import DashGraph from "./DashGraph";
 import { toast } from "react-toastify";
 import { IDE } from "../../Routes";
 import { formatRoute } from "react-router-named-routes";
 import * as ToastConfig from "../../constants/toast.config";
+import DateTimePicker from "react-datetime-picker";
 
 class DashDocker extends React.Component<any, any> {
     userUpdate: Object;
@@ -31,8 +46,18 @@ class DashDocker extends React.Component<any, any> {
             "modalDeleteValidation": false,
             "modalStartIDE": false,
             "modalStartIDEValidated": false,
+            "modalAddShare": false,
             "isNameEditing": false,
-            "editDockerName": ""
+            "editDockerName": "",
+            "modalCommitImage": false,
+            "nameCommit": "",
+            "versionCommit": "",
+            "versionBeforeCommit": "",
+            "privacyCommit": "",
+            "usersNotShared": [],
+            "usersShared": [],
+            "dataShared": [],
+            "dateUserNotShare": []
         };
         this.startDocker = this.startDocker.bind(this);
         this.stopDocker = this.stopDocker.bind(this);
@@ -42,12 +67,73 @@ class DashDocker extends React.Component<any, any> {
         this.deleteDocker = this.deleteDocker.bind(this);
         this.editDockerName = this.editDockerName.bind(this);
         this.handleChange = this.handleChange.bind(this);
+    }
 
+    componentWillMount() {
+        this.props.Auth.getImage(this.props.docker.image.id).then((res) => {
+            this.setState({
+                nameCommit: res.content.image.name,
+                versionBeforeCommit: res.content.image.version,
+                privacyCommit: res.content.image.privacy ? "public" : "private"
+            });
+        });
+
+        this.props.Auth.getAllUserDockerShared(this.props.docker.id).then((res) => {
+            this.setState({ 
+                usersShared: res.content.users,
+                dataShared: res.content.share_infos 
+            });
+        }).then(() => {
+            this.props.Auth.getAllUsers().then((res) => {
+                let usersNotShared = res.content.users.filter(this.checkUnshared);
+                let dates = [];
+                for (let i = 0; i < usersNotShared.length; i++) {
+                    dates[i] = new Date();
+                }
+                this.setState({ 
+                    usersNotShared: usersNotShared,
+                    dateUserNotShare: dates
+                });
+            });
+        });
+    }
+    
+    componentDidMount() {
         this.statsDocker();
     }
     
     componentWillUnmount() {
         clearInterval(this.interval);
+    }
+
+    checkUnshared = (user: any) => {
+        let bool = true;
+        for (let i = 0; i < this.state.usersShared.length; i++) {
+            if (user.id === this.state.usersShared[i].id) {
+                bool = false;
+            }
+        }
+        return bool;
+    }
+
+    checkInfosUnshared = (info: any) => {
+        let bool = true;
+        for (let i = 0; i < this.state.dataShared.length; i++) {
+            if (info.id === this.state.dataShared[i].id) {
+                bool = false;
+            }
+        }
+        return bool;
+    }
+
+    removeListUserShare = (user: any) => {
+        let bool = false;
+        for (let i = 0; i < this.state.usersShared.length; i++) {
+            if (user.id === this.state.usersShared[i].id) {
+                bool = true;
+            }
+        }
+        return bool;
     }
 
     startDocker() {
@@ -230,9 +316,16 @@ class DashDocker extends React.Component<any, any> {
 
     showDeleteModal = () => this.setState({ modalDeleteValidation: true });
     showStartIDEModal = () => this.state.dockerRunning ? this.redirectIDE() : this.setState({ modalStartIDE: true });
+    showCommitModal = () => this.setState({ modalCommitImage: true });
+    showAddShareModal = () => this.setState({ modalAddShare: true });
+    closeAddShareModal = () => this.setState({ modalAddShare: false });
+    closeCommitModal = () => this.setState({ modalCommitImage: false });
     closeDeleteModal = () => this.setState({ modalDeleteValidation: false });
     closeStartIDEModal = () => this.setState({ modalStartIDE: false });
     redirectIDE = () => this.props.parentProps.history.push(formatRoute(IDE, {id: this.props.docker.id}));
+
+    handleChangeNameCommit = (e: any) => this.setState({ nameCommit: e.target.value });
+    handleChangeVersionCommit = (e: any) => this.setState({ versionCommit: e.target.value });
 
     handlerBeforeIDE = () => {
         if (this.state.dockerPaused) {
@@ -247,7 +340,144 @@ class DashDocker extends React.Component<any, any> {
         }
     }
 
+    exportContainer = () => this.props.Auth.exportContainer(this.props.docker.id);
+
+    exportImage = () => this.props.Auth.exportImage();
+
+    commitImage = () => {
+        this.props.Auth.commitImage(
+            this.props.docker.id, 
+            this.state.nameCommit, 
+            this.state.versionCommit, 
+            this.state.privacyCommit === "public" ? false : true
+            ).then((res) => {
+            toast(res.content.message, res.content.toast);
+            this.closeCommitModal();
+        });
+    }
+
+    shareEnv = (user: any, date: any, i: number) => {        
+        this.props.Auth.shareEnv(this.props.docker.id, user.id, date).then((res) => {
+            toast(res.content.message, res.content.toast);
+        }).then(() => {
+            this.props.Auth.getAllUserDockerShared(this.props.docker.id).then((res) => {
+                this.state.dateUserNotShare.splice(i, 1);
+                this.setState({ 
+                    usersShared: this.state.usersShared.concat(user),
+                    dataShared: res.content.share_infos,
+                    usersNotShared: this.state.usersNotShared.filter((item) => item.id !== user.id),
+                    dateUserNotShare: this.state.dateUserNotShare
+                });
+            });
+        });
+    }
+
+    handleChangeRadioCommit = (e: any, radio: any) => {
+        this.setState({ privacyCommit: radio.value });
+    }
+
+    removeShareEnv = (user: any) => {
+        this.props.Auth.removeShareEnv(this.props.docker.id, user.id).then((res) => {
+            toast(res.content.message, res.content.toast);
+        }).then(() => {
+            this.props.Auth.getAllUserDockerShared(this.props.docker.id).then((res) => {
+                this.state.dateUserNotShare.push(new Date());
+                this.setState({ 
+                    usersShared: res.content.users,
+                    dataShared: res.content.share_infos,
+                    usersNotShared: this.state.usersNotShared.concat(user),
+                    dateUserNotShare: this.state.dateUserNotShare
+                });
+            });
+        });
+    }
+
+    onChangeDate = (e: any, i: number) => {
+        this.state.dateUserNotShare[i] = e;
+        this.setState({ dateUserNotShare:  this.state.dateUserNotShare });
+    }
+
+    onChangeSharedDate = (date: any, i: number) => {
+        this.state.dataShared[i].expiration = date;
+        this.setState({ dataShared: this.state.dataShared });
+    }
+
+    updateShare = (i: number) => {
+        this.props.Auth.shareEnv(
+            this.props.docker.id, 
+            this.state.usersShared[i].id, 
+            new Date(this.state.dataShared[i].expiration)
+            ).then((res) => {
+            toast("Expiration date changed", res.content.toast);
+        }).then(() => {
+            this.props.Auth.getAllUserDockerShared(this.props.docker.id).then((res) => {
+                this.setState({ dataShared: res.content.share_infos });
+            });
+        });
+    }
+
     render() {
+        let body = [];
+        for (let i = 0; i < this.state.usersShared.length; i++) {
+            let date = new Date(this.state.dataShared[i].expiration);
+            body.push(
+                <Table.Row key={this.state.usersShared[i].username}>
+                    <Table.Cell>{this.state.usersShared[i].firstname} {this.state.usersShared[i].lastname}</Table.Cell>
+                    <Table.Cell>
+                    <DateTimePicker
+                        onChange={(e) => this.onChangeSharedDate(e, i)}
+                        value={date}
+                    />
+                    </Table.Cell>
+                    <Table.Cell>
+                        <Icon 
+                            color="red" 
+                            name="close"
+                            onClick={() => this.removeShareEnv(this.state.usersShared[i])}
+                            style={{ cursor: "pointer" }} 
+                        />
+                        <Icon 
+                            color="green" 
+                            name="check"
+                            onClick={() => this.updateShare(i)}
+                            style={{ cursor: "pointer" }} 
+                        />
+                    </Table.Cell>
+                </Table.Row>
+            );
+        }
+
+        let bodyNotShared = [];
+        for (let i = 0; i < this.state.usersNotShared.length; i++) {
+            bodyNotShared.push(
+                <Table.Row key={this.state.usersNotShared[i].username}>
+                    <Table.Cell>
+                        {this.state.usersNotShared[i].firstname} {this.state.usersNotShared[i].lastname}
+                    </Table.Cell>
+                    <Table.Cell>
+                    <DateTimePicker
+                        onChange={(e) => this.onChangeDate(e, i)}
+                        value={this.state.dateUserNotShare[i]}
+                    />
+                    </Table.Cell>
+                    <Table.Cell>
+                        <Icon.Group 
+                            style={{ cursor: "pointer" }} 
+                            onClick={() => {
+                                this.shareEnv(this.state.usersNotShared[i], this.state.dateUserNotShare[i], i);
+                            }}
+                        >
+                            <Icon 
+                                color="green" 
+                                name="share square"
+                            />
+                            Share
+                        </Icon.Group>
+                    </Table.Cell>
+                </Table.Row>
+            );
+        }
+
         return (
             <div>
                 <Grid>
@@ -433,7 +663,7 @@ class DashDocker extends React.Component<any, any> {
                             </Container>
                         </Grid.Column>
                     </Grid.Row>
-                    <Grid.Row>
+                    <Grid.Row columns={3}>
                         <Grid.Column>
                             <List>
                                 <List.Item>
@@ -442,12 +672,16 @@ class DashDocker extends React.Component<any, any> {
                                 </List.Item>
                                 <List.Item>
                                     <List.Header>Image</List.Header>
-                                    {this.state.dockerImage}
+                                    {this.state.dockerImage} {this.props.docker.image.version}
                                 </List.Item>
                                 <List.Item>
                                     <List.Header>Creation date</List.Header>
                                     {this.state.dockerCreationDate}
                                 </List.Item>
+                            </List>
+                        </Grid.Column>
+                        <Grid.Column>
+                            <List>
                                 <List.Item>
                                     <List.Header>Status</List.Header>
                                     {this.state.dockerStatus}
@@ -464,35 +698,165 @@ class DashDocker extends React.Component<any, any> {
                                     {(this.state.dockerMemoryLimit).toFixed(2)}&nbsp;Mo
                                     &nbsp;({(this.state.dockerMemoryPercentage).toFixed(2)} %)
                                 </List.Item>
+                            </List>
+                        </Grid.Column>
+                        <Grid.Column>
+                            <List>
                                 <List.Item>
-                                    <Grid>
-                                        <Grid.Row columns={2}>
-                                            <Grid.Column>
-                                                <DashGraph
-                                                    datavalues={this.state.dockerCpuArray}
-                                                    datamax={100}
-                                                    dataname={[ "CPU", "max" ]}
-                                                    graphcolor="accent"
+                                    <List.Header><Icon name="download" /> Export</List.Header>
+                                    <Button.Group widths="2">
+                                        <Button onClick={this.exportContainer}>
+                                            Container
+                                        </Button>
+                                        <Button.Or />
+                                        <Button onClick={this.exportImage}>
+                                            Image
+                                        </Button>
+                                    </Button.Group>
+                                </List.Item>
+                                <List.Item>
+                                    <List.Header><Icon name="save" /> Save Image</List.Header>
+                                    <Button.Group widths="1">
+                                        <Button onClick={this.showCommitModal}>
+                                            Save
+                                        </Button>
+                                    </Button.Group>
+                                    <Modal
+                                        size="small"
+                                        open={this.state.modalCommitImage}
+                                        onClose={this.closeCommitModal}
+                                    >
+                                        <Header icon="plus square outline" content="Save Image" />
+                                        <Modal.Content>
+                                        <Form>
+                                            <Form.Group>
+                                                <Form.Input
+                                                    label="Name"
+                                                    required={true}
+                                                    name="Name"
+                                                    placeholder="Name"
+                                                    value={this.state.nameCommit}
+                                                    width={12}
+                                                    onChange={this.handleChangeNameCommit}
                                                 />
-                                            </Grid.Column>
-                                            <Grid.Column>
-                                                <DashGraph
-                                                    datavalues={this.state.dockerMemoryArray}
-                                                    datamax={this.state.dockerMemoryLimit}
-                                                    dataname={[ "RAM", "max" ]}
-                                                    graphcolor="paired"
+                                                <Form.Input
+                                                    label="Version"
+                                                    required={true}
+                                                    name="Version"
+                                                    placeholder={this.state.versionBeforeCommit}
+                                                    width={4}
+                                                    onChange={this.handleChangeVersionCommit}
                                                 />
-                                            </Grid.Column>
-                                        </Grid.Row>
-                                    </Grid>
+                                            </Form.Group>
+                                            <Form.Group inline={true}>
+                                                <label>Privacy</label>
+                                                <Form.Field
+                                                    control={Radio}
+                                                    label="Private"
+                                                    value="private"
+                                                    checked={this.state.privacyCommit === "private"}
+                                                    onChange={this.handleChangeRadioCommit}
+                                                />
+                                                <Form.Field
+                                                    control={Radio}
+                                                    label="Public"
+                                                    value="public"
+                                                    checked={this.state.privacyCommit === "public"}
+                                                    onChange={this.handleChangeRadioCommit}
+                                                />
+                                            </Form.Group>
+                                        </Form>
+                                        </Modal.Content>
+                                        <Modal.Actions>
+                                                <Button color="red" inverted={true} onClick={this.closeCommitModal}>
+                                                    <Icon name="remove" /> Cancel
+                                                </Button>
+                                                <Button color="green" inverted={true} onClick={this.commitImage}>
+                                                    <Icon name="checkmark"/> Save
+                                                </Button>
+                                        </Modal.Actions>
+                                    </Modal>
                                 </List.Item>
                             </List>
                         </Grid.Column>
+                    </Grid.Row>
+                    <Grid.Row columns={2}>
+                        <Grid.Column>
+                            <DashGraph
+                                datavalues={this.state.dockerCpuArray}
+                                datamax={100}
+                                dataname={[ "CPU", "max" ]}
+                                graphcolor="accent"
+                            />
+                        </Grid.Column>
+                        <Grid.Column>
+                            <DashGraph
+                                datavalues={this.state.dockerMemoryArray}
+                                datamax={this.state.dockerMemoryLimit}
+                                dataname={[ "RAM", "max" ]}
+                                graphcolor="paired"
+                            />
+                        </Grid.Column>
+                    </Grid.Row>
+                    <Grid.Row columns={3}>
+                    <Grid.Column width={1} />
+                        <Grid.Column width={14}>
+                            <h3>
+                                <small>Share environment </small>
+                                <Icon 
+                                    color="green" 
+                                    name="plus square outline" 
+                                    onClick={this.showAddShareModal} 
+                                    style={{ cursor: "pointer" }}
+                                />
+                            </h3>
+                            <Modal
+                                size="small"
+                                open={this.state.modalAddShare}
+                                onClose={this.closeAddShareModal}
+                            >
+                                <Header icon="plus square outline" content="Add User" />
+                                <Modal.Content>
+                                {this.state.usersNotShared === 0 ?
+                                    <p>You have shared your environment with everyone</p>
+                                : 
+                                <Table size="small">
+                                    <Table.Header>
+                                    <Table.Row>
+                                        <Table.HeaderCell>Name</Table.HeaderCell>
+                                        <Table.HeaderCell>Until</Table.HeaderCell>
+                                        <Table.HeaderCell>Action</Table.HeaderCell>
+                                    </Table.Row>
+                                    </Table.Header>
+                                    <Table.Body>
+                                        {bodyNotShared}
+                                    </Table.Body>
+                                </Table>
+                                }
+                                </Modal.Content>
+                            </Modal>
+                            {this.state.usersShared ?
+                                <Table size="small">
+                                    <Table.Header>
+                                    <Table.Row>
+                                        <Table.HeaderCell>Name</Table.HeaderCell>
+                                        <Table.HeaderCell>Until</Table.HeaderCell>
+                                        <Table.HeaderCell>Action</Table.HeaderCell>
+                                    </Table.Row>
+                                    </Table.Header>
+                                    <Table.Body>
+                                        {body}
+                                    </Table.Body>
+                                </Table>
+                            : 
+                            <p>Your environment is not shared with anyone.</p>
+                            }
+                        </Grid.Column>
+                        <Grid.Column width={1} />
                     </Grid.Row>
                 </Grid>
             </div>
         );
     }
-
 }
 export default DashDocker;
