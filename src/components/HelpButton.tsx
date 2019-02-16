@@ -133,6 +133,22 @@ export default class HelpButton extends React.Component<any, any> {
                                     If your IDE is not showing, refresh the page <br/>
                                     and wait a little.
                                 </Accordion.Content>
+
+                                <Accordion.Title
+                                    active={this.state.activeIndex === 5}
+                                    index={5}
+                                    onClick={this.handleClickAcc}
+                                >
+                                <Icon name="dropdown" />
+                                    I'm trying to access the IDE of an environment <br/>
+                                    someone shared with me but nothing is showing?
+                                </Accordion.Title>
+
+                                <Accordion.Content active={this.state.activeIndex === 5}>
+                                    It is probably due to the fact that the shared <br/>
+                                    environment hasn't been started byt its original <br/>
+                                    user. Check with them to see if it was started.
+                                </Accordion.Content>
                             </Accordion>
                         </Segment>
                     : null
