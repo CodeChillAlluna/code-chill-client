@@ -1,5 +1,6 @@
 import * as React from "react";
 import { Grid, List, Header, Form, Radio } from "semantic-ui-react";
+import { toast } from "react-toastify";
 // import { toast } from "react-toastify";
 // import { formatRoute } from "react-router-named-routes";
 // import * as ToastConfig from "../../constants/toast.config";
@@ -16,7 +17,10 @@ class DashImage extends React.Component<any, any> {
     handleChangeRadio = (e: any, radio: any) => {
         this.setState({ radioPrivacy: radio.value });
         let privacy = radio.value === "private" ? true : false;
-        this.props.Auth.changePrivacy(this.props.image.id, privacy);
+        this.props.Auth.changePrivacy(this.props.image.id, privacy).then((res) => {
+            console.log(res);
+            toast(res.content.message, res.content.toast);
+        });
     }
 
     render() {

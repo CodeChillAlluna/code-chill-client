@@ -410,6 +410,13 @@ export default class AuthService {
         return this.fetch(`${this.domain}/images/${id}/privacy/${privacy}`, {
             method: "PUT",
         }).then((res) => {
+            if (res.status === 200) {
+                res["content"]["message"] = "Privacy changed.";
+                res["content"]["toast"] = ToastConfig.SUCCESS;
+            } else {
+                res["content"]["message"] = "Could not change privacy.";
+                res["content"]["toast"] = ToastConfig.ERROR;
+            }
             return Promise.resolve(res);
         });
     }

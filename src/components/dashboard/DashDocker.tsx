@@ -65,8 +65,6 @@ class DashDocker extends React.Component<any, any> {
         this.deleteDocker = this.deleteDocker.bind(this);
         this.editDockerName = this.editDockerName.bind(this);
         this.handleChange = this.handleChange.bind(this);
-
-        this.statsDocker();
     }
 
     componentWillMount() {
@@ -91,6 +89,10 @@ class DashDocker extends React.Component<any, any> {
                 });
             });
         });
+    }
+    
+    componentDidMount() {
+        this.statsDocker();
     }
     
     componentWillUnmount() {
@@ -386,7 +388,7 @@ class DashDocker extends React.Component<any, any> {
                 <Table.Row key={this.state.usersShared[i].username}>
                     <Table.Cell>{this.state.usersShared[i].firstname} {this.state.usersShared[i].lastname}</Table.Cell>
                     <Table.Cell>
-                        {this.state.dataShared[i].readOnly === true ? <div>Yes</div> : <div>No</div>}
+                        {/* date picker */}
                     </Table.Cell>
                     <Table.Cell>
                         <Icon.Group 
@@ -409,6 +411,9 @@ class DashDocker extends React.Component<any, any> {
                 <Table.Row key={this.state.usersNotShared[i].username}>
                     <Table.Cell>
                         {this.state.usersNotShared[i].firstname} {this.state.usersNotShared[i].lastname}
+                    </Table.Cell>
+                    <Table.Cell>
+                        {/* Data picker */}
                     </Table.Cell>
                     <Table.Cell>
                         <Icon.Group 
@@ -772,6 +777,7 @@ class DashDocker extends React.Component<any, any> {
                                     <Table.Header>
                                     <Table.Row>
                                         <Table.HeaderCell>Name</Table.HeaderCell>
+                                        <Table.HeaderCell>Until</Table.HeaderCell>
                                         <Table.HeaderCell>Action</Table.HeaderCell>
                                     </Table.Row>
                                     </Table.Header>
@@ -787,7 +793,7 @@ class DashDocker extends React.Component<any, any> {
                                     <Table.Header>
                                     <Table.Row>
                                         <Table.HeaderCell>Name</Table.HeaderCell>
-                                        <Table.HeaderCell>ReadOnly</Table.HeaderCell>
+                                        <Table.HeaderCell>Unitl</Table.HeaderCell>
                                         <Table.HeaderCell>Action</Table.HeaderCell>
                                     </Table.Row>
                                     </Table.Header>

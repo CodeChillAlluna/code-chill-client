@@ -52,11 +52,13 @@ class DashMenu extends React.Component<any, any> {
             toast("Only A-Z, a-z, 0-9 and '_' are accepted.", ToastConfig.WARNING);
         } else {
             this.Auth.createDocker(this.state.addDockerName, this.state.imageSelected).then((res) => {
+                if (res.status === 200) {                   
+                    let updatedDockers = this.state.dockers;
+                    updatedDockers.push(res.content);
+                    this.setState({ dockers: updatedDockers });
+                }
                 toast(res.content.message, res.content.toast);
                 delete res.content.message;
-                let updatedDockers = this.state.dockers;
-                updatedDockers.push(res.content);
-                this.setState({ dockers: updatedDockers });
                 this.closeAddModal();
             });
         }
