@@ -439,7 +439,7 @@ class DashDocker extends React.Component<any, any> {
                         <Icon 
                             color="green" 
                             name="check"
-                            onClick={() => this.updateShare(i) }
+                            onClick={() => this.updateShare(i)}
                             style={{ cursor: "pointer" }} 
                         />
                     </Table.Cell>
