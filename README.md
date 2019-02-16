@@ -1,4 +1,5 @@
 # Code & Chill
+[![Clientversion](https://img.shields.io/github/tag/CodeChillAlluna/code-chill-client.svg?label=version&style=for-the-badge)](https://github.com/CodeChillAlluna/code-chill-client)
 [![Travis (.org) branch](https://img.shields.io/travis/CodeChillAlluna/code-chill-client/master.svg?style=for-the-badge)](https://travis-ci.org/CodeChillAlluna/code-chill-client) [![Codacy branch grade](https://img.shields.io/codacy/grade/43a38b1824344b8fb5496798cac09162/master.svg?style=for-the-badge)](https://app.codacy.com/project/Lulu300/code-chill-client/dashboard) [![Coveralls github branch](https://img.shields.io/coveralls/github/CodeChillAlluna/code-chill-client/master.svg?style=for-the-badge)](https://coveralls.io/github/CodeChillAlluna/code-chill-client) [![Code Climate](https://img.shields.io/codeclimate/maintainability/CodeChillAlluna/code-chill-client.svg?style=for-the-badge)](https://codeclimate.com/github/CodeChillAlluna/code-chill-client) [![License: Apache-2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg?style=for-the-badge)](https://opensource.org/licenses/Apache-2.0)
 
 Master project : Online development environment
@@ -101,33 +102,4 @@ yarn build
 
 ## Installation 
 
-Here is the setup to installing the production environment if you want to use this project.
-
-### Requirements
-
-- [Docker](https://www.docker.com/)
-- [Code&Chill Server](https://github.com/CodeChillAlluna/code-chill-server#installation)
-
-
-
-### Configure & Start application
-
-Create a file named `config.js` wherever you want and change the values you need.
-
-```javascript
-window.env = {
-  restApi: "http://localhost:8080", // URL of your install of Code&Chill Server
-  docker: "http://localhost" // URL where your dockers will installed
-};
-```
-
-Then just run a new container with our image `codechillaluna/code-chill-client`. 
-
-```sh
-docker run --name code-chill-client -v config.js:/www/config.js -p 3000:80 codechillaluna/code-chill-client
-```
-
-Replace `code-chill-client` by the name you want for your container, `config.js` by the location of your config file, `3000` by the port you want to use in your host.
-
-
-
+The procedure to install Code&Chill is accessible in our main [repository](https://github.com/CodeChillAlluna/code-chill#installation).
