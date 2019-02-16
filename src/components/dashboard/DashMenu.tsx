@@ -118,81 +118,81 @@ class DashMenu extends React.Component<any, any> {
 
         return (
             <div>
+                <HelpButton />
                 <Grid>
-                <Grid.Row columns={2}>
-
-                    <Grid.Column>
-                        <Header as="h1">Dashboard</Header>
-                    </Grid.Column>
-                    <Grid.Column>
-                        <Container textAlign="right">
-
-                            <h2>
-                                <small>Add new environment </small>
-                                <Icon 
-                                    color="green" 
-                                    name="plus square outline" 
-                                    onClick={this.showAddModal} 
-                                    style={{ cursor: "pointer" }}
-                                />
-                                <Modal
-                                    size="small"
-                                    open={this.state.modalAddValidation}
-                                    onClose={this.closeAddModal}
-                                >
-                                    <Header icon="plus square outline" content="Add environment?" />
-                                    <Modal.Content>
-                                        <Form>
-                                            <Form.Group grouped={true}>
-                                                <label>Name</label>
-                                                <Form.Field>
-                                                    <Input
+                    <Grid.Row columns={2}>
+                        <Grid.Column>
+                            <Header as="h1">Dashboard</Header>
+                        </Grid.Column>
+                        <Grid.Column>
+                            <Container textAlign="right">
+                                <h2>
+                                    <small>Add new environment </small>
+                                    <Icon 
+                                        color="green" 
+                                        name="plus square outline" 
+                                        onClick={this.showAddModal} 
+                                        style={{ cursor: "pointer" }}
+                                    />
+                                    <Modal
+                                        size="small"
+                                        open={this.state.modalAddValidation}
+                                        onClose={this.closeAddModal}
+                                    >
+                                        <Header icon="plus square outline" content="Add environment?" />
+                                        <Modal.Content>
+                                            <Form>
+                                                <Form.Group grouped={true}>
+                                                    <label>Name</label>
+                                                    <Form.Field>
+                                                        <Input
+                                                            required={true}
+                                                            name="addDockerName"
+                                                            placeholder="New Environment name"
+                                                            onChange={this.handleChange}
+                                                            width={1}
+                                                        />
+                                                        <Message info={true}>
+                                                            <Message.Header>Accepted characters</Message.Header>
+                                                            <p>A-Z, a-z, "_"</p>
+                                                        </Message>
+                                                    </Form.Field>
+                                                </Form.Group>
+                                                <Form.Group grouped={true}>
+                                                    <Select 
+                                                        placeholder="Choose your image" 
+                                                        options={this.state.images} 
                                                         required={true}
-                                                        name="addDockerName"
-                                                        placeholder="New Environment name"
-                                                        onChange={this.handleChange}
-                                                        width={1}
+                                                        onChange={this.handleChangeSelect}
+                                                        value={this.state.imageSelected}
                                                     />
-                                                    <Message info={true}>
-                                                        <Message.Header>Accepted characters</Message.Header>
-                                                        <p>A-Z, a-z, "_"</p>
-                                                    </Message>
-                                                </Form.Field>
-                                            </Form.Group>
-                                            <Form.Group grouped={true}>
-                                                <Select 
-                                                    placeholder="Choose your image" 
-                                                    options={this.state.images} 
-                                                    required={true}
-                                                    onChange={this.handleChangeSelect}
-                                                    value={this.state.imageSelected}
-                                                />
-                                            </Form.Group>
-                                        </Form>
-                                    </Modal.Content>
-                                    <Modal.Actions>
+                                                </Form.Group>
+                                            </Form>
+                                        </Modal.Content>
+                                        <Modal.Actions>
                                             <Button color="red" inverted={true} onClick={this.closeAddModal}>
                                                 <Icon name="remove" /> Cancel
                                             </Button>
+
                                             <Button color="green" inverted={true} onClick={this.addDocker}>
                                                 <Icon name="checkmark"/> Add
                                             </Button>
-                                    </Modal.Actions>
-                                </Modal>
-                            </h2>
-                        </Container>
-                        <HelpButton />
-                    </Grid.Column>
-                </Grid.Row>
+                                        </Modal.Actions>
+                                    </Modal>
+                                </h2>
+                            </Container>
+                        </Grid.Column>
+                    </Grid.Row>
+
+                    <Divider />
+
+                    <Tab 
+                        menu={{ pointing: true }} 
+                        panes={panes}
+                    />
                 </Grid>
-                <Divider />
-                <Tab 
-                    menu={{ pointing: true }} 
-                    panes={panes}
-                />
             </div>
         );
     }
-
 }
 export default withAuth(DashMenu);

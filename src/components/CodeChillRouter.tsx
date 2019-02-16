@@ -22,7 +22,7 @@ export default class CodeChillRouter extends React.Component<any, any> {
 
     render() {
         return (
-            <main>
+            <div>
                 <BrowserRouter basename={config.homepage}>
                     <Switch>
 
@@ -93,7 +93,7 @@ export default class CodeChillRouter extends React.Component<any, any> {
                     </Switch>
                 </BrowserRouter>
                 <ToastContainer/>
-            </main>
+            </div>
         );
     }
 
